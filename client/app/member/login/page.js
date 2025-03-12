@@ -2,42 +2,36 @@
 import styles from "../Login.module.css";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { auth, googleProvider } from "@/firebase/firebase-config"; 
+import { signInWithPopup } from "firebase/auth";
 
 export default function Login() {
   const [checkingAuth, setCheckingAuth] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [password1, setPassword1] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const { user, login } = useAuth() || {};
+
+  const { user, login, googleLogin } = useAuth() || {};
+  const router = useRouter();
 
 const handleGoogleLogin = async () => {
-    try {
-      const result = await signInWithPopup(auth, googleProvider); // 使用 Firebase 的 auth 和 provider
-      const user = result.user;
-      console.log("Google 登入成功:", user);
+  try {
+    const result = await signInWithPopup(auth, googleProvider);
+    const googleUser = result.user;
 
-      // 將使用者資料傳送到後端
-      const response = await fetch("http://localhost:3005/api/member/users/google-login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          providerId: user.providerData[0].providerId,
-          uid: user.uid,
-          displayName: user.displayName,
-          email: user.email,
-          photoURL: user.photoURL,
-        }),
-      });
-      const data = await response.json();
-    console.log("後端回傳資料:", data);
+    const loginResult = await googleLogin({
+      providerId: googleUser.providerData[0].providerId,
+      uid: googleUser.uid,
+      displayName: googleUser.displayName,
+      email: googleUser.email,
+      photoURL: googleUser.photoURL,
+    });
 
-    if (data.status === "success") {
-      // 登入成功後跳轉到會員頁面
+    if (loginResult.status === "success") {
+      alert("Google 登入成功！");
       router.push("/");
     } else {
       alert("Google 登入失敗，請稍後再試");
@@ -48,15 +42,13 @@ const handleGoogleLogin = async () => {
   }
 };
 
-
   const handleLogin = () => {
-    // setError("");
-    if (password !== password1) {
-      alert("密碼不一致，請重新輸入");
-      // console.log("密碼不一致");
+    if (!email.trim() || !password.trim()) {
+      alert("請輸入 Email 和密碼！");
       return;
     }
     console.log(email, password);
+
     if (typeof login === "function") {
       login(email, password);
     } else {
@@ -69,14 +61,14 @@ const handleGoogleLogin = async () => {
   }, [user]);
 
   if (checkingAuth) {
-    return <></>;
+    return <div>載入中...</div>;
   }
 
   return (
     <div className={styles.loginPage}>
       <div className={styles.main}>
         <img
-          src="/image/DiveIn-logo-dark-final.png"
+          src="/image/logoblack.png"
           alt="logo"
           className={styles.logo}
         />
@@ -115,28 +107,6 @@ const handleGoogleLogin = async () => {
               {showPassword ? <FaEyeSlash /> : <FaEye />}
             </span>
           </div>
-          <div style={{ position: "relative" }}>
-            <input
-              type={showPassword ? "text" : "password"}
-              name="password1"
-              className={styles.wordbox}
-              value={password1}
-              onChange={(e) => setPassword1(e.target.value)}
-              placeholder="再次輸入密碼"
-            />
-            <span
-              onClick={() => setShowPassword(!showPassword)}
-              style={{
-                position: "absolute",
-                right: "2rem",
-                top: "50%",
-                transform: "translateY(-50%)",
-                cursor: "pointer",
-              }}
-            >
-              {showPassword ? <FaEyeSlash /> : <FaEye />}
-            </span>
-          </div>
           <div className={styles.loginWays}>
             <div className={styles.loginBtn} onClick={handleLogin}>
               <h6>登入</h6>
@@ -150,12 +120,6 @@ const handleGoogleLogin = async () => {
               <div className={styles.googleBox} onClick={handleGoogleLogin}>
                 <img src="/img/ic_google.svg" alt="Google logo" />
                 <h6>Continue with Google</h6>
-              </div>
-            </div>
-            <div className={styles.loginLine}>
-              <div className={styles.lineBox}>
-                <img src="/img/line.png" alt="Line logo" />
-                <h6>Continue with Line</h6>
               </div>
             </div>
             <div className={styles.fcBox}>

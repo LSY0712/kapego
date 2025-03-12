@@ -48,12 +48,6 @@ export default function User() {
                 <Link href="/member/favorite">我的收藏</Link>
               </MenuItem>
               <MenuItem onClick={handleClose}>
-                <Link href="/coupon">優惠券</Link>
-              </MenuItem>
-              <MenuItem onClick={handleClose}>
-                <Link href="/member/group">我的團購</Link>
-              </MenuItem>
-              <MenuItem onClick={handleClose}>
                 <Link href="/member/account">帳戶設定</Link>
               </MenuItem>
               <MenuItem

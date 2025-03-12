@@ -17,6 +17,7 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(-1);
   const [profile, setProfile] = useState({
     id: "",
+    google_uid: "",
     name: "",
     email: "",
     birthday: "",
@@ -61,12 +62,9 @@ export function AuthProvider({ children }) {
       const newUser = jwt.decode(token);
       setUser(newUser);
       localStorage.setItem(appKey, token);
-      // const newToken = result.data.token;
-      // localStorage.setItem(appKey, newToken);
-      // setToken(newToken);
-      // const decoded = jwt.decode(newToken);
-      // setUser(decoded);
-      // alert("登入成功");
+
+      await getProfile(newUser.id);
+
       router.replace("/");
     } catch (err) {
       console.log(err);
@@ -74,28 +72,67 @@ export function AuthProvider({ children }) {
       router.replace("/member/register");
     }
   };
-  // 处理用户登出
-  // const logout = async () => {
-  //   const API = "http://localhost:3005/api/member/users/logout";
-  //   const token = localStorage.getItem(appKey);
-  //   try {
-  //     if (!token) throw new Error("身分認證訊息不存在, 請重新登入");
-  //     const res = await fetch(API, {
-  //       method: "POST",
-  //       headers: {
-  //         Authorization: `Bearer ${token}`,
-  //       },
-  //     });
-  //     const result = await res.json();
-  //     if (result.status != "success") throw new Error(result.message);
-  //     localStorage.removeItem(appKey);
-  //     setUser(null);
-  //     router.replace("/member/login")
-  //   } catch (err) {
-  //     console.log(err);
-  //     alert(err.message);
-  //   }
-  // };
+  // google 登入
+  const googleLogin = async (googleUserData) => {
+    const API = "http://localhost:3005/api/member/users/google-login";
+  
+    try {
+      const res = await fetch(API, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(googleUserData),
+      });
+  
+      const result = await res.json();
+      if (result.status !== "success") throw new Error(result.message);
+  
+      // 拿到後端回傳的 JWT
+      const token = result.data.token;
+      const newUser = jwt.decode(token);
+  
+      // 儲存 token 和 user 狀態
+      localStorage.setItem(appKey, token);
+      setUser(newUser);
+  
+      await getProfile(newUser.id);
+
+      console.log("✅ Google 登入成功:", newUser);
+      router.replace("/");
+  
+      return { status: "success", user: newUser };
+    } catch (err) {
+      console.error("❌ Google 登入失敗:", err);
+      alert(err.message || "Google 登入失敗，請稍後再試");
+  
+      return { status: "error", message: err.message };
+    }
+  };
+
+  const getProfile = async (userId) => {
+    try {
+      const token = localStorage.getItem(appKey);
+      if (!token) throw new Error("Token 不存在，請重新登入");
+  
+      const res = await fetch(`http://localhost:3005/api/member/users/${userId}`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+  
+      const result = await res.json();
+  
+      if (result.status !== "success") throw new Error(result.message);
+  
+      console.log("✅ 取得個人資料成功:", result.data);
+  
+      setProfile(result.data);  // 將資料寫進 profile 狀態
+    } catch (err) {
+      console.error("❌ 取得個人資料失敗:", err);
+    }
+  };
+
+// 處理用戶登出
   const logout = async () => {
     let API = "http://localhost:3005/api/member/users/logout";
     let token = localStorage.getItem(appKey);
@@ -187,6 +224,7 @@ export function AuthProvider({ children }) {
         const newUser = jwt.decode(result.data.token);
         console.log("✅ 使用者登入成功:", newUser);
         setUser(newUser);
+        await getProfile(newUser.id);
       } catch (err) {
         console.error("❌ 取得用戶狀態失敗:", err);
         localStorage.removeItem(appKey);
@@ -209,6 +247,8 @@ export function AuthProvider({ children }) {
         login,
         logout,
         register,
+        googleLogin,
+        getProfile,
       }}
     >
       {children}

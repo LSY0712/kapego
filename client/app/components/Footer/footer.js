@@ -9,7 +9,7 @@ export default function Footer() {
                     <div className="row footer-top">
                         <div className="col d-flex justify-content-center d-sm-block">
                             <div className="footer-icon-container">
-                                <img src="/image/DiveIn-logo-light-final.png" alt="" />
+                                <img src="/image/logowhite.png" alt="" />
                             </div>
                         </div>
                         {/* 電腦版 網站地圖 關於我們 */}
@@ -40,33 +40,7 @@ export default function Footer() {
                                 </a>
                             </div>
                         </div>
-                        <div className="d-none d-sm-block col footer-list">
-                            <div>
-                                <a className="text-reset a" href="#">
-                                    活動列表
-                                </a>
-                            </div>
-                            <div>
-                                <a className="text-reset a" href="#">
-                                    課程列表
-                                </a>
-                            </div>
-                            <div>
-                                <a className="text-reset a" href="#">
-                                    商品列表
-                                </a>
-                            </div>
-                            <div>
-                                <a className="text-reset a" href="#">
-                                    租賃列表
-                                </a>
-                            </div>
-                            <div>
-                                <a className="text-reset a" href="#">
-                                    文章列表
-                                </a>
-                            </div>
-                        </div>
+                        
                         <div className="d-none d-sm-block col footer-list">
                             <div className="footer-list-container d-flex flex-column">
                                 <div className="footer-list-group d-flex align-items-center">
@@ -90,9 +64,9 @@ export default function Footer() {
                                         <h6 className="footer-list-h6 m-0">
                                             聯絡方式
                                         </h6>
-                                        <p className="footer-list-p m-0">
-                                            http://divein.com.tw/
-                                        </p>
+                                        <a className="footer-list-p m-0 text-decoration-none text-white">
+                                        https://kapego.com
+                                        </a>
                                     </div>
                                 </div>
                                 <div className="footer-list-group d-flex align-items-center">
@@ -181,9 +155,9 @@ export default function Footer() {
                                             <h6 className="footer-list-h6 m-0">
                                                 聯絡方式
                                             </h6>
-                                            <p className="footer-list-p m-0">
-                                                http://divein.com.tw/
-                                            </p>
+                                            <a className="footer-list-p m-0">
+                                                https://kapego.com
+                                            </a>
                                         </div>
                                     </div>
                                     <div className="footer-list-group d-flex align-items-center">

@@ -17,8 +17,8 @@
 }
 
 .logo {
-  width: auto;
-  height: 432px;
+  width: 300px;
+  height: auto;
 }
 
 .line1 {
@@ -72,7 +72,7 @@
   justify-content: center;
   align-items: center;
   border-radius: 50px;
-  background: #219ebc;
+  background: #95001D;
   color: #fff;
   text-align: center;
   cursor: pointer;
@@ -145,7 +145,7 @@
 }
 
 .ctext {
-  color: #ffb703;
+  color: #95001D;
   cursor: pointer;
   text-decoration: none;
 }

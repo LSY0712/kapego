@@ -10,10 +10,11 @@ import jwt from "jsonwebtoken";
 
 export default function Account() {
   const router = useRouter();
-  const { user, profile, loading, setProfile } = useAuth();
+  const { user, profile, loading, getProfile } = useAuth();
   // 初始化用戶數據
   const [userData, setUserData] = useState({
     id: "",
+    google_uid: "",
     name: "",
     email: "",
     birthday: "",
@@ -102,21 +103,26 @@ export default function Account() {
       sendCodeBtn.removeEventListener("click", handleSendCodeClick);
     };
   }, []);
-  // 進入頁面時檢查 token 並獲取用戶數據
   useEffect(() => {
     const storedToken = localStorage.getItem("loginWithToken");
     console.log("🔍 Token:", storedToken); // ✅ 檢查 token
     if (loading) return;
-
+  
+    // 沒有 user，重導到登入
     if (!user || !user.id) {
       router.replace("/member/login");
       return;
     }
-    if (!profile || !profile.id) return;
-
-
-    setUserData((prev) => ({
-      ...prev, // 保留之前的 user
+  
+    // 沒有 profile，主動撈！
+    if (!profile || !profile.id) {
+      console.log("🚀 嘗試撈取個人資料...");
+      getProfile(user.id); // 👉 這一行是關鍵
+      return;
+    }
+  
+    // profile 有了，設置 userData
+    setUserData({
       id: profile.id,
       name: profile.name || "",
       email: profile.email || "",
@@ -127,11 +133,10 @@ export default function Account() {
       emergency_contact: profile.emergency_contact || "",
       emergency_phone: profile.emergency_phone || "",
       img: profile.img || "/img/default.png",
-    }));
-
-    console.log("API 回傳的完整 profile:", profile);
+    });
+  
+    console.log("✅ 已取得 profile:", profile);
   }, [user, profile, loading]);
-
   if (loading) return <p>加載中...</p>;
 
   return (
@@ -293,13 +298,6 @@ export default function Account() {
                     onChange={handleInputChange}
                     placeholder="緊急連絡人電話"
                   />
-                  {/* <input
-                    type="password"
-                    value={userData.password}
-                    className={`${styles.box1} ${styles.boxSame}`}
-                    onChange={(e) => setNewPassword(e.target.value)}
-                    placeholder="密碼"
-                  /> */}
                 </div>
               </div>
               <div className={`${styles.IBbtn}`}>

@@ -92,7 +92,7 @@ export default function Header() {
           </div>
           <HeaderPop show={showPop} activeMenu={activeMenu} />
           <div className="header-right-box d-flex justify-content-end align-items-center">
-            <form className="d-flex search-box" action="">
+            {/* <form className="d-flex search-box" action="">
               <input
                 type="search"
                 className="form-control"
@@ -101,7 +101,7 @@ export default function Header() {
               <button className="btn">
                 <FaSearch className="text-secondary vstack text-center" />
               </button>
-            </form>
+            </form> */}
             <a href="/cart/step1" className="header-cart a" id="cart-icon">
               <FiShoppingCart />
             </a>
