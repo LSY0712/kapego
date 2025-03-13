@@ -71,11 +71,9 @@ export default function ProductCard({ product }) {
     >
       <Link href={`/products/${product.id}`} className={styles.productLink}>
         <div className={styles.productImg}>
-          <Image
-            src={`/img/product/${product.main_image}`}
+          <img
+            src={`/img/product/`}
             alt={product.name || "商品圖片"}
-            fill
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             style={{
               objectFit: "cover",
               opacity: imageLoaded ? 1 : 0,
