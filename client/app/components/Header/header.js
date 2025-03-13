@@ -31,7 +31,7 @@ export default function Header() {
           </div>
           <div className="header-list d-flex justify-content-between align-items-center">
             <ul className="m-0 d-flex justify-content-between align-items-center list-unstyled">
-              <li className="px-3 py-2">
+              <li className="px-4 py-2">
                 <Link
                   className="a"
                   href="/"
@@ -42,68 +42,30 @@ export default function Header() {
                   首頁
                 </Link>
               </li>
-
-              <li className="px-3 py-2">
+              <li className="px-4 py-2">
                 <Link
                   className="a"
                   href="/products"
                   onMouseEnter={() => handleMouseEnter("products")}
                 >
-                  商品
+                  商品列表
                 </Link>
               </li>
-              <li className="px-3 py-2">
-                <Link
-                  className="a"
-                  href="/activity"
-                  onMouseEnter={() => handleMouseEnter("events")}
-                >
-                  活動
-                </Link>
-              </li>
-              <li className="px-3 py-2">
-                <Link
-                  className="a"
-                  href="/rent"
-                  onMouseEnter={() => handleMouseEnter("rental")}
-                >
-                  租借
-                </Link>
-              </li>
-              <li className="px-3 py-2">
-                <Link
-                  className="a"
-                  href="/group"
-                  onMouseEnter={() => handleMouseEnter("group")}
-                >
-                  揪團
-                </Link>
-              </li>
-              <li className="px-3 py-2">
+              <li className="px-4 py-2">
                 <Link
                   className="a"
                   href="/article"
                   onMouseEnter={() => handleMouseEnter("forum")}
                 >
-                  論壇
+                  關於我們
                 </Link>
               </li>
             </ul>
           </div>
           <HeaderPop show={showPop} activeMenu={activeMenu} />
           <div className="header-right-box d-flex justify-content-end align-items-center">
-            {/* <form className="d-flex search-box" action="">
-              <input
-                type="search"
-                className="form-control"
-                placeholder="Search"
-              />
-              <button className="btn">
-                <FaSearch className="text-secondary vstack text-center" />
-              </button>
-            </form> */}
             <a href="/cart/step1" className="header-cart a" id="cart-icon">
-              <FiShoppingCart />
+              <FiShoppingCart size={20}/>
             </a>
             <User />
           </div>
@@ -209,93 +171,6 @@ export default function Header() {
                   <li className="list-group-item">
                     <a className="a text-reset" href="#">
                       生活小物
-                    </a>
-                  </li>
-                </ul>
-              </div>
-            </li>
-            <li className="px-3 py-2">
-              <button
-                className="btn dropdown-toggle p-0 text-reset"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#activity-menu"
-              >
-                活動
-              </button>
-              <div className="mobile-collapse collapse mt-3" id="activity-menu">
-                <ul className="list-group">
-                  <li className="list-group-item">
-                    <a className="a text-reset" href="#">
-                      自由潛水活動
-                    </a>
-                  </li>
-                  <li className="list-group-item">
-                    <a className="a text-reset" href="#">
-                      水肺潛水活動
-                    </a>
-                  </li>
-                  <li className="list-group-item">
-                    <a className="a text-reset" href="#">
-                      浮潛活動
-                    </a>
-                  </li>
-                </ul>
-              </div>
-            </li>
-            <li className="px-3 py-2">
-              <button
-                className="btn dropdown-toggle p-0 text-reset"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#rent-menu"
-              >
-                租借
-              </button>
-              <div className="mobile-collapse collapse mt-3" id="rent-menu">
-                <ul className="list-group">
-                  <li className="list-group-item">
-                    <a className="a text-reset" href="#">
-                      基礎裝備租借
-                    </a>
-                  </li>
-                  <li className="list-group-item">
-                    <a className="a text-reset" href="#">
-                      專業裝備租借
-                    </a>
-                  </li>
-                  <li className="list-group-item">
-                    <a className="a text-reset" href="#">
-                      水下攝影設備
-                    </a>
-                  </li>
-                </ul>
-              </div>
-            </li>
-            <li className="px-3 py-2">
-              <button
-                className="btn dropdown-toggle p-0 text-reset"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#group-menu"
-              >
-                揪團
-              </button>
-              <div className="mobile-collapse collapse mt-3" id="group-menu">
-                <ul className="list-group">
-                  <li className="list-group-item">
-                    <a className="a text-reset" href="#">
-                      建立揪團
-                    </a>
-                  </li>
-                  <li className="list-group-item">
-                    <a className="a text-reset" href="#">
-                      參加揪團
-                    </a>
-                  </li>
-                  <li className="list-group-item">
-                    <a className="a text-reset" href="#">
-                      我的揪團
                     </a>
                   </li>
                 </ul>

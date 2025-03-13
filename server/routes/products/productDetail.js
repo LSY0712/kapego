@@ -1,6 +1,6 @@
 // routes/products/productDetail.js
 import express from "express";
-import { pool } from "../../config/mysql.js";
+import { pool } from "../../config/db.js";
 const router = express.Router();
 
 router.get("/:id", async (req, res) => {
@@ -9,7 +9,6 @@ router.get("/:id", async (req, res) => {
     const productSql = `
       SELECT 
         p.*, 
-        b.name AS brand_name,
         (
           SELECT COUNT(*) 
           FROM reviews pr 

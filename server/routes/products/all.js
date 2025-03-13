@@ -1,83 +1,30 @@
-// routes/products/all.js
 import express from "express";
-import { pool } from "../../config/mysql.js";
-import {
-  buildProductQuery,
-  parseProductColors,
-} from "../../helpers/productQuery.js";
+import pool from "../../config/db.js"; // 你自己的 mysql2 連線池
 
 const router = express.Router();
 
 router.get("/", async (req, res) => {
   try {
-    // 分頁與排序參數
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 24;
+    const { page = 1, limit = 10, sort = 'id', order = 'ASC', series } = req.query;
     const offset = (page - 1) * limit;
-    const sort = parseInt(req.query.sort) || 1;
-    const colorIds = req.query.color_id
-      ? req.query.color_id
-          .split(",")
-          .map(Number)
-          .filter((num) => !isNaN(num))
-      : [];
 
-    const minPrice = req.query.min_price
-      ? parseFloat(req.query.min_price)
-      : undefined;
-    const maxPrice = req.query.max_price
-      ? parseFloat(req.query.max_price)
-      : undefined;
+    let sql = "SELECT * FROM product";
+    const params = [];
 
-    // 此處沒有傳入 brandId 或 categoryId，表示查詢所有商品
-    const { sql, queryParams, whereClause } = buildProductQuery({
-      brandId: null,
-      categoryId: null,
-      colorIds,
-      minPrice,
-      maxPrice,
-      sort,
-      offset,
-      limit,
-    });
+    if (series) {
+      sql += " WHERE series = ?";
+      params.push(series);
+    }
 
-    // 取得全部符合條件的總筆數
-    const totalCountSql = `SELECT COUNT(DISTINCT p.id) AS totalCount FROM product p ${
-      whereClause || "WHERE 1=1"
-    }`;
+    sql += ` ORDER BY ${sort} ${order} LIMIT ? OFFSET ?`;
+    params.push(Number(limit), Number(offset));
 
-    const [[{ totalCount }]] = await pool.execute(totalCountSql, queryParams);
+    const [rows] = await pool.query(sql, params);
 
-    // 取得產品資料
-    const [rows] = await pool.execute(sql, queryParams);
-    const totalPages = Math.ceil(totalCount / limit);
-
-    // 使用 helper 函數處理顏色
-    const parsedRows = parseProductColors(rows);
-
-    // 確保每個產品的 price 字段都被 min_price 替代（為了向後兼容）
-    const compatibleRows = parsedRows.map(product => ({
-      ...product,
-      price: product.min_price || product.price
-    }));
-
-    res.json({
-      status: "success",
-      data: compatibleRows,
-      pagination: {
-        totalCount,
-        totalPages,
-        currentPage: page,
-        limit,
-      },
-    });
+    res.json({ success: true, data: rows });
   } catch (error) {
-    console.error("Error querying all products:", error);
-    res.status(500).json({
-      status: "error",
-      message: "Database query error",
-      error: error.message,
-    });
+    console.error("取得商品列表失敗:", error);
+    res.status(500).json({ success: false, message: "伺服器錯誤" });
   }
 });
 

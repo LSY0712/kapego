@@ -20,38 +20,13 @@ export default function Home() {
   const [activity,setActivity] = useState([])
   const [product,setProduct] = useState([])
   const [article,setArticle] = useState([])
+  
   return (
     <>
       <main>
         {/* KV */}
         <Carousel/>
-        {/* <div className={`${styles.kv}`}>
-          <div
-            className={`w-100 d-flex justify-content-between align-items-center`}
-          >
-            <button className={`${styles.circleButton} d-none d-sm-flex`}>
-              <FaAngleLeft />
-            </button>
-            <div className="text-center w-100">
-              <div
-                className={`text-center d-flex flex-column ${styles.kvText}`}
-              >
-                <h1 className={styles.h1}>探索無重力的寧靜與神秘</h1>
-                <p className={`${styles.p} d-none d-sm-block`}>
-                  "It's not just diving; it's a new way of life."
-                </p>
-              </div>
-              <Link href="/products">
-                <button className={styles.scondaryBtn}>馬上逛逛</button>
-              </Link>
-            </div>
-
-            <button className={`${styles.circleButton} d-none d-sm-flex`}>
-              <FaAngleRight />
-            </button>
-          </div>
-        </div> */}
-
+        
         {/* section start */}
         <div className={`container ${styles.sectionStart}`}>
           <div

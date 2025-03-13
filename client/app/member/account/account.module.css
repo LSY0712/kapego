@@ -193,7 +193,7 @@
   justify-content: center;
   align-items: center;
   border-radius: 50px;
-  background: var(--primary, #219ebc);
+  background: var(--primary, #000);
   color: #fff;
   border: 0;
 }
@@ -211,7 +211,7 @@
   transition: background-color 0.3s ease;
 }
 .dfbtn:hover {
-  background-color: var(--secondary-color, #ffd500); /* 滑鼠懸停時變淡 */
+  background-color: var(--secondary-color, #95001D); /* 滑鼠懸停時變淡 */
 }
 .line2 {
   width: 2px;

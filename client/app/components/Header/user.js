@@ -21,52 +21,66 @@ export default function User() {
 
   return (
     // FIXME: 修正下拉選單位置
-    <div className="position-relative">
+    <div>
       {user && user !== -1 ? (
-        <IconButton onClick={handleClick}>
-          <FaRegUser />
+        <IconButton
+          onClick={handleClick}
+          sx={{
+            color: "white", // 確保 icon 顯示出來
+            zIndex: 1200,
+          }}
+        >
+          <FaRegUser size={20} />
         </IconButton>
       ) : (
         <Link href="/member/login" className="header-cart a">
-          <FaRegUser />
+          <FaRegUser size={20} color="white" />
         </Link>
       )}
 
-      {/* ✅ 修正下拉選單位置 */}
       <Menu
-        anchorEl={anchorEl}
-        open={open}
-        onClose={handleClose}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-        transformOrigin={{ vertical: "top", horizontal: "center" }}
-        sx={{ marginTop: "8px" }}
+        anchorEl={anchorEl} // 讓選單靠著按鈕顯示
+        open={open} // 控制開關
+        onClose={handleClose} // 點外面就關閉
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "right",
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+        PaperProps={{
+          sx: {
+            mt: 4,
+            zIndex: 1200,
+            minWidth: 130,
+          },
+        }}
       >
-        <div>
-          {user ? (
-            <>
-              <MenuItem onClick={handleClose}>
-                <Link href="/member/favorite">我的收藏</Link>
-              </MenuItem>
-              <MenuItem onClick={handleClose}>
-                <Link href="/member/account">帳戶設定</Link>
-              </MenuItem>
-              <MenuItem
-                onClick={() => {
-                  handleClose();
-                }}
-                style={{ color: "red" }}
-              >
-              <Link href="/member/logout" className="text-reset">
-                登出
-              </Link>
-              </MenuItem>
-            </>
-          ) : (
+        {user ? (
+          <>
             <MenuItem onClick={handleClose}>
-              <Link href="/member/login">登入</Link>
+              <Link href="/member/favorite">我的收藏</Link>
             </MenuItem>
-          )}
-        </div>
+            <MenuItem onClick={handleClose}>
+              <Link href="/member/account">帳戶設定</Link>
+            </MenuItem>
+            <MenuItem
+              onClick={() => {
+                logout();
+                handleClose();
+              }}
+              sx={{ color: "red", fontSize: "",}}
+            >
+              登出
+            </MenuItem>
+          </>
+        ) : (
+          <MenuItem onClick={handleClose}>
+            <Link href="/member/login">登入</Link>
+          </MenuItem>
+        )}
       </Menu>
     </div>
   );

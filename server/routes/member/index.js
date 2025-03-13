@@ -7,7 +7,7 @@ import jwt from "jsonwebtoken";
 import { v4 as uuidv4 } from "uuid";
 import bcrypt from "bcrypt";
 import dotenv from "dotenv";
-import { pool } from "../../config/mysql.js";
+import { pool } from "../../config/db.js";
 import path from "path";
 import fs from "fs";
 import { fileURLToPath } from "url";

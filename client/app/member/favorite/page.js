@@ -1,4 +1,5 @@
 import styles from "./favorite.module.css";
+import Link from "next/link";
 
 export default function favorite() {
   return (
@@ -9,21 +10,20 @@ export default function favorite() {
             <h5 style={{ margin: 0 }}>會員中心</h5>
           </div>
           <div className={styles.asideContent}>
-            <div className={styles.ASother}>
-              <h6 style={{ margin: 0 }}>我的帳戶</h6>
-            </div>
-            <div className={styles.ASother}>
-              <h6 style={{ margin: 0 }}>我的訂單</h6>
-            </div>
-            <div className={styles.ASother}>
-              <h6 style={{ margin: 0 }}>我的揪團</h6>
-            </div>
             <div className={styles.ASpoint}>
-              <h6 style={{ margin: 0 }}>我的最愛</h6>
+              <Link href="/member/account" className={styles.ASpoint}>
+                <h6>我的帳戶</h6>
+              </Link>
             </div>
-            <div className={styles.ASother}>
-              <h6 style={{ margin: 0 }}>我的優惠券</h6>
-            </div>
+            <Link href="/member/order/orderRent" className={styles.ASother}>
+              <h6>我的訂單</h6>
+            </Link>
+            <Link href="/member/group" className={styles.ASother}>
+              <h6>我的揪團</h6>
+            </Link>
+            <Link href="/member/favorite" className={styles.ASother}>
+              <h6>我的最愛</h6>
+            </Link>
           </div>
         </div>
       </div>
