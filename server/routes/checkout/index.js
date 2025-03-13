@@ -1,5 +1,5 @@
 import express from "express";
-import { pool } from "../../config/mysql.js";
+import { pool } from "../../config/db.js";
 import multer from "multer";
 
 const router = express.Router();
