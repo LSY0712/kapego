@@ -9,7 +9,7 @@ export default function Footer() {
                     <div className="row footer-top">
                         <div className="col d-flex justify-content-center d-sm-block">
                             <div className="footer-icon-container">
-                                <img src="/image/logowhite.png" alt="" />
+                                <img src="/img/logowhite.png" alt="" />
                             </div>
                         </div>
                         {/* 電腦版 網站地圖 關於我們 */}

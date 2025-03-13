@@ -1,4 +1,3 @@
-"use client";
 import Link from "next/link";
 import Image from "next/image";
 import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
@@ -8,12 +7,27 @@ import { useCart } from "@/hooks/cartContext";
 import useToast from "@/hooks/useToast";
 import { useState } from "react";
 
+// 這邊定義 series 對應表
+const seriesMap = {
+  1: "內嵌型壁燈",
+  2: "埋地燈",
+  3: "投射燈",
+  4: "水底內嵌型壁燈",
+  5: "水底投射燈",
+  6: "長條型洗牆燈",
+  7: "壁燈",
+  8: "吸頂燈",
+  9: "柱燈",
+  0: "其他燈具",
+};
+
 export default function ProductCard({ product }) {
   const {
     isFavorite,
     toggleFavorite,
     loading: favoriteLoading,
   } = useFavorite(product.id, "product");
+
   const { addToCart } = useCart();
   const { showToast } = useToast();
   const [imageLoaded, setImageLoaded] = useState(false);
@@ -23,14 +37,12 @@ export default function ProductCard({ product }) {
     e.stopPropagation();
 
     try {
-      // 如果沒有 variants，使用商品本身的資料建立預設變體
       const cartData = {
-        userId: 1, // 暫時寫死
+        userId: 1,
         type: "product",
-        variantId: product.variant_id, // 直接使用商品 ID
+        variantId: product.variant_id,
         quantity: 1,
       };
-      console.log(" DEBUG: cartData =", cartData);
 
       const success = await addToCart(1, cartData);
       if (success) {
@@ -42,18 +54,14 @@ export default function ProductCard({ product }) {
     }
   };
 
-  // 顯示價格範圍的函數
   const renderPriceRange = () => {
-    // 使用 min_price 和 max_price 顯示價格範圍
     const minPrice = product.min_price || product.price;
     const maxPrice = product.max_price;
 
-    // 如果最低價格和最高價格相同，只顯示一個價格
     if (!maxPrice || minPrice === maxPrice) {
       return `NT$${minPrice}`;
     }
 
-    // 否則顯示價格範圍
     return `NT$${minPrice} ~ NT$${maxPrice}`;
   };
 
@@ -74,7 +82,6 @@ export default function ProductCard({ product }) {
               transition: "opacity 0.3s ease-in",
             }}
             onLoadingComplete={() => setImageLoaded(true)}
-            priority={false}
           />
           <div className={styles.productOverlay}>
             <button
@@ -103,9 +110,11 @@ export default function ProductCard({ product }) {
             </button>
           </div>
         </div>
+
+        {/* 顏色列表 */}
         <div className={`d-flex justify-content-center gap-1 my-2`}>
           {product.color && product.color.length > 0 ? (
-            product.color.map((color, index) => (
+            product.color.map((color) => (
               <div
                 key={color.color_id}
                 className={styles.saleCircle}
@@ -121,10 +130,13 @@ export default function ProductCard({ product }) {
             <div className={styles.saleCircle} style={{ opacity: 0.3 }} />
           )}
         </div>
+
         <div className={styles.productInfo}>
+          {/* 這裡顯示系列名稱 */}
           <div className={styles.brandName}>
-            {product.brand_name || "自由品牌"}
+            {seriesMap[product.series] || "其他系列"}
           </div>
+
           <div>{product.name || "商品名稱"}</div>
           <div className={styles.salePrice}>{renderPriceRange()}</div>
           <div className={styles.originalPrice}>

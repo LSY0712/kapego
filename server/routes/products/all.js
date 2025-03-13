@@ -35,15 +35,13 @@ router.get("/", async (req, res) => {
 
     // 查詢商品 + 系列名稱
     const sql = `
-      SELECT 
-        p.*, 
-        s.name AS series_name
-      FROM product p
-      LEFT JOIN series s ON p.series = s.id
-      ${whereSQL}
-      ORDER BY p.${sortField} ${sortOrder}
-      LIMIT ? OFFSET ?
-    `;
+  SELECT 
+    p.* 
+  FROM product p
+  ${whereSQL}
+  ORDER BY p.${sortField} ${sortOrder}
+  LIMIT ? OFFSET ?
+`;
 
     params.push(Number(limit), Number(offset));
 
@@ -53,7 +51,6 @@ router.get("/", async (req, res) => {
     const countSQL = `
       SELECT COUNT(*) AS total
       FROM product p
-      LEFT JOIN series s ON p.series = s.id
       ${whereSQL}
     `;
     const [countResult] = await pool.query(countSQL, params.slice(0, -2));

@@ -1,11 +1,12 @@
 /* 全域設定 */
 :root {
-  --primary-deep-color: #023047;
-  --primary-color: #219ebc;
-  --primary-light-color: #8ecae6;
-  --secondary-deep-color: #ffb703;
-  --secondary-color: #ffd500;
-  --secondary-light-color: #f1d691;
+  --hover: #95001D;
+/* --primary-deep-color: #95001D; */
+--primary-color: #000;
+/* --primary-light-color: #8ecae6;
+--secondary-deep-color: #ffb703; */
+--secondary-color: #a8a8a8;
+/* --secondary-light-color: #f1d691; */
 }
 /* 全頁共用樣式 */
 .scondaryBtn {
