@@ -48,7 +48,7 @@ export default function Order() {
                 <i className="bi bi-person-fill me-2"></i>
                 <span>我的帳戶</span>
               </Link>
-              <Link href="/member/order/orderRent" className={`${styles.menuItem} ${styles.active}`}>
+              <Link href="/member/order" className={`${styles.menuItem} ${styles.active}`}>
                 <i className="bi bi-bag-check-fill me-2"></i>
                 <span>我的訂單</span>
               </Link>

@@ -156,7 +156,7 @@ export default function Account() {
         <span>我的帳戶</span>
       </Link>
 
-      <Link href="/member/order/orderRent" className={styles.menuItem}>
+      <Link href="/member/order" className={styles.menuItem}>
         <i className="bi bi-bag-check-fill me-2"></i>
         <span>我的訂單</span>
       </Link>
@@ -174,7 +174,7 @@ export default function Account() {
             {/* 表單和頭像卡片區塊 */}
             <div className={`${styles.sectionList}`}>
               {/* 左側表單 */}
-              <div className="pe-5 flex-grow-1 border-end">
+              <div className="flex-grow-1 border-end">
                   <form>
                     <div className="mb-4 row">
                       <label className="col-sm-3 col-form-label">姓名</label>

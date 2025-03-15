@@ -95,7 +95,7 @@
 
 .sectionList {
   display: flex;
-  gap: 40px; /* 關鍵！讓左右不黏一起 */
+  gap: 30px; /* 關鍵！讓左右不黏一起 */
   align-items: flex-start; /* 避免被強迫置中 */
   padding: 50px 70px;
   align-items: center;
@@ -175,7 +175,7 @@
 }
 .IBbtn {
   display: flex;
-  align-items: center;
+  justify-content: center;
   gap: 1.9rem;
 }
 .hvbtn {
@@ -186,7 +186,7 @@
   justify-content: center;
   align-items: center;
   border-radius: 50px;
-  background: var(--primary, #000);
+  background: var(--primary, #95001D);
   color: #fff;
   border: 0;
 }
@@ -216,7 +216,7 @@
   display: flex;
   flex-direction: column; /* 頭像 + 名稱 + 按鈕，建議直排 */
   padding: 30px 60px;
-  margin-left: 50px;
+  margin-left: 60px;
   align-items: center;
   justify-content: flex-start;
   gap: 20px;
@@ -267,7 +267,7 @@
   gap: 10px;
   border-radius: 10px;
   border: 1px solid var(--gray-500, #a3a3a3);
-  color: #a3a3a3;
+  color: #95001D;
   cursor: pointer; /* 讓 label 像按鈕一樣可點擊 */
   min-width: 120px; 
   transition: background-color 0.3s ease;

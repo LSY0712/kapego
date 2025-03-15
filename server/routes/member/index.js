@@ -434,6 +434,89 @@ router.post("/users/logout", checkToken, (req, res) => {
   }
 });
 
+router.get("/users/:id/favorite", checkToken, async (req, res) => {
+  const { id } = req.params;
+
+  if (parseInt(id) !== req.decoded.id) {
+    return res.status(403).json({ status: "error", message: "沒有權限" });
+  }
+
+  try {
+    const sql = `
+      SELECT p.id, p.name, p.price, p.img
+      FROM favorites f
+      JOIN products p ON f.product_id = p.id
+      WHERE f.user_id = ?
+    `;
+    const [rows] = await pool.execute(sql, [id]);
+
+    res.status(200).json({
+      status: "success",
+      data: rows,
+      message: "取得收藏清單成功",
+    });
+  } catch (err) {
+    res.status(500).json({ status: "error", message: err.message });
+  }
+});
+
+router.post("/users/:id/favorite", checkToken, async (req, res) => {
+  const { id } = req.params;
+  const { productId } = req.body;
+
+  if (parseInt(id) !== req.decoded.id) {
+    return res.status(403).json({ status: "error", message: "沒有權限" });
+  }
+
+  try {
+    // 查重
+    const [exists] = await pool.execute(
+      "SELECT * FROM favorites WHERE user_id = ? AND product_id = ?",
+      [id, productId]
+    );
+    if (exists.length > 0) {
+      return res.status(400).json({ status: "error", message: "已加入收藏" });
+    }
+
+    const sql = "INSERT INTO favorites (user_id, product_id) VALUES (?, ?)";
+    await pool.execute(sql, [id, productId]);
+
+    res.status(201).json({
+      status: "success",
+      message: "收藏成功",
+    });
+  } catch (err) {
+    res.status(500).json({ status: "error", message: err.message });
+  }
+});
+
+router.delete("/users/:id/favorite/:productId", checkToken, async (req, res) => {
+  const { id, productId } = req.params;
+
+  if (parseInt(id) !== req.decoded.id) {
+    return res.status(403).json({ status: "error", message: "沒有權限" });
+  }
+
+  try {
+    const sql = "DELETE FROM favorites WHERE user_id = ? AND product_id = ?";
+    const [result] = await pool.execute(sql, [id, productId]);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({
+        status: "error",
+        message: "該收藏不存在",
+      });
+    }
+
+    res.status(200).json({
+      status: "success",
+      message: "成功移除收藏",
+    });
+  } catch (err) {
+    res.status(500).json({ status: "error", message: err.message });
+  }
+});
+
 
 router.post("/users/status", checkToken, (req, res) => {
   const { decoded } = req;
