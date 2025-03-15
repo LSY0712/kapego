@@ -63,13 +63,15 @@ export default function RootLayout({ children }) {
           crossorigin="anonymous"
         ></Script>
       </head>
-      <body className={`${geistSans.variable} ${geistMono.variable}`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} d-flex flex-column min-vh-100`}>
         <AuthProvider>
           <Header />
-          <CartProvider>
-            {children}
-            <ToastContainer />
-          </CartProvider>
+          <main className="flex-grow-1">
+            <CartProvider>
+              {children}
+              <ToastContainer />
+            </CartProvider>
+          </main>
           <Footer />
         </AuthProvider>
       </body>

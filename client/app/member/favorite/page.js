@@ -1,139 +1,101 @@
-import styles from "./favorite.module.css";
+"use client";
+import styles from "../account/account.module.css"; 
 import Link from "next/link";
+import { useState, useEffect } from "react";
 
-export default function favorite() {
+export default function Favorite() {
+  const [favorites, setFavorites] = useState([]);
+
+  // 模擬獲取我的最愛商品資料
+  useEffect(() => {
+    // 這裡可以換成從 API 拉資料
+    const fakeData = [
+      {
+        id: 1,
+        name: "專業潛水面鏡",
+        price: "$2,500",
+        img: "/img/product1.jpg",
+      },
+      {
+        id: 2,
+        name: "潛水呼吸管",
+        price: "$1,200",
+        img: "/img/product2.jpg",
+      },
+      {
+        id: 3,
+        name: "潛水蛙鞋",
+        price: "$3,800",
+        img: "/img/product3.jpg",
+      },
+    ];
+    setFavorites(fakeData);
+  }, []);
+
   return (
-    <div className={styles.content}>
-      <div className={styles.aside}>
-        <div className={styles.listBox}>
-          <div className={styles.asideTitle}>
-            <h5 style={{ margin: 0 }}>會員中心</h5>
-          </div>
-          <div className={styles.asideContent}>
-            <div className={styles.ASpoint}>
-              <Link href="/member/account" className={styles.ASpoint}>
-                <h6>我的帳戶</h6>
+    <div className="container my-5">
+      <div className="row">
+        {/* 側邊選單 */}
+        <aside className="col-md-3">
+          <div className={`${styles.listBox} shadow-sm rounded-3`}>
+            <div className={styles.asideTitle}>
+              <h5 className="fw-bold m-0">會員中心</h5>
+            </div>
+
+            <div className={styles.asideContent}>
+              <Link href="/member/account" className={styles.menuItem}>
+                <i className="bi bi-person-fill me-2"></i>
+                <span>我的帳戶</span>
+              </Link>
+              <Link href="/member/order/orderRent" className={styles.menuItem}>
+                <i className="bi bi-bag-check-fill me-2"></i>
+                <span>我的訂單</span>
+              </Link>
+              <Link href="/member/favorite" className={`${styles.menuItem} ${styles.active}`}>
+                <i className="bi bi-heart-fill me-2"></i>
+                <span>我的最愛</span>
               </Link>
             </div>
-            <Link href="/member/order/orderRent" className={styles.ASother}>
-              <h6>我的訂單</h6>
-            </Link>
-            <Link href="/member/group" className={styles.ASother}>
-              <h6>我的揪團</h6>
-            </Link>
-            <Link href="/member/favorite" className={styles.ASother}>
-              <h6>我的最愛</h6>
-            </Link>
           </div>
-        </div>
-      </div>
-      <div className={styles.main}>
-        <div className={styles.mainTitle}>
-          <h4 style={{ fontWeight: 700, margin: 0 }}>我的最愛</h4>
-        </div>
-        {/* Repeat for each order section */}
-        <div className={styles.sectionContent}>
-          <div className={styles.SCcard}>
-            <img src="/dc48b717dc65c863526fd471b4d2a2c7.jpg" alt="" />
-            <div className={styles.SCtext}>
-              <p style={{ color: "#898989" }}>APORO</p>
-              <p>揪團名稱</p>
-              <h5 style={{ fontWeight: 700 }}>NT $2000</h5>
-            </div>
+        </aside>
+
+        {/* 主內容 */}
+        <main className="col-md-9">
+          <h4 className="fw-bold mb-4 ms-4">我的最愛</h4>
+
+          <div className="d-flex flex-wrap gap-4 justify-content-start">
+            {favorites.length === 0 ? (
+              <p>尚無收藏商品。</p>
+            ) : (
+              favorites.map((item) => (
+                <div
+                  key={item.id}
+                  className="card shadow-sm rounded-3"
+                  style={{ width: "18rem" }}
+                >
+                  <img
+                    src={item.img}
+                    className="card-img-top"
+                    alt={item.name}
+                    style={{ height: "200px", objectFit: "cover" }}
+                  />
+                  <div className="card-body d-flex flex-column justify-content-between">
+                    <h5 className="card-title">{item.name}</h5>
+                    <p className="card-text fw-bold text-danger">{item.price}</p>
+                    <div className="d-flex justify-content-between align-items-center mt-3">
+                      <button className="btn btn-sm btn-outline-secondary">
+                        加入購物車
+                      </button>
+                      <button className="btn btn-sm btn-outline-danger">
+                        移除
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
-          <div className={styles.SCcard}>
-            <img src="/dc48b717dc65c863526fd471b4d2a2c7.jpg" alt="" />
-            <div className={styles.SCtext}>
-              <p style={{ color: "#898989" }}>APORO</p>
-              <p>揪團名稱</p>
-              <h5 style={{ fontWeight: 700 }}>NT $2000</h5>
-            </div>
-          </div>
-          <div className={styles.SCcard}>
-            <img src="/dc48b717dc65c863526fd471b4d2a2c7.jpg" alt="" />
-            <div className={styles.SCtext}>
-              <p style={{ color: "#898989" }}>APORO</p>
-              <p>揪團名稱</p>
-              <h5 style={{ fontWeight: 700 }}>NT $2000</h5>
-            </div>
-          </div>
-          <div className={styles.SCcard}>
-            <img src="/dc48b717dc65c863526fd471b4d2a2c7.jpg" alt="" />
-            <div className={styles.SCtext}>
-              <p style={{ color: "#898989" }}>APORO</p>
-              <p>揪團名稱</p>
-              <h5 style={{ fontWeight: 700 }}>NT $2000</h5>
-            </div>
-          </div>
-        </div>
-        <div className={styles.sectionContent}>
-          <div className={styles.SCcard}>
-            <img src="/dc48b717dc65c863526fd471b4d2a2c7.jpg" alt="" />
-            <div className={styles.SCtext}>
-              <p style={{ color: "#898989" }}>APORO</p>
-              <p>揪團名稱</p>
-              <h5 style={{ fontWeight: 700 }}>NT $2000</h5>
-            </div>
-          </div>
-          <div className={styles.SCcard}>
-            <img src="/dc48b717dc65c863526fd471b4d2a2c7.jpg" alt="" />
-            <div className={styles.SCtext}>
-              <p style={{ color: "#898989" }}>APORO</p>
-              <p>揪團名稱</p>
-              <h5 style={{ fontWeight: 700 }}>NT $2000</h5>
-            </div>
-          </div>
-          <div className={styles.SCcard}>
-            <img src="/dc48b717dc65c863526fd471b4d2a2c7.jpg" alt="" />
-            <div className={styles.SCtext}>
-              <p style={{ color: "#898989" }}>APORO</p>
-              <p>揪團名稱</p>
-              <h5 style={{ fontWeight: 700 }}>NT $2000</h5>
-            </div>
-          </div>
-          <div className={styles.SCcard}>
-            <img src="/dc48b717dc65c863526fd471b4d2a2c7.jpg" alt="" />
-            <div className={styles.SCtext}>
-              <p style={{ color: "#898989" }}>APORO</p>
-              <p>揪團名稱</p>
-              <h5 style={{ fontWeight: 700 }}>NT $2000</h5>
-            </div>
-          </div>
-        </div>
-        <div className={styles.sectionContent}>
-          <div className={styles.SCcard}>
-            <img src="/dc48b717dc65c863526fd471b4d2a2c7.jpg" alt="" />
-            <div className={styles.SCtext}>
-              <p style={{ color: "#898989" }}>APORO</p>
-              <p>揪團名稱</p>
-              <h5 style={{ fontWeight: 700 }}>NT $2000</h5>
-            </div>
-          </div>
-          <div className={styles.SCcard}>
-            <img src="/dc48b717dc65c863526fd471b4d2a2c7.jpg" alt="" />
-            <div className={styles.SCtext}>
-              <p style={{ color: "#898989" }}>APORO</p>
-              <p>揪團名稱</p>
-              <h5 style={{ fontWeight: 700 }}>NT $2000</h5>
-            </div>
-          </div>
-          <div className={styles.SCcard}>
-            <img src="/dc48b717dc65c863526fd471b4d2a2c7.jpg" alt="" />
-            <div className={styles.SCtext}>
-              <p style={{ color: "#898989" }}>APORO</p>
-              <p>揪團名稱</p>
-              <h5 style={{ fontWeight: 700 }}>NT $2000</h5>
-            </div>
-          </div>
-          <div className={styles.SCcard}>
-            <img src="/dc48b717dc65c863526fd471b4d2a2c7.jpg" alt="" />
-            <div className={styles.SCtext}>
-              <p style={{ color: "#898989" }}>APORO</p>
-              <p>揪團名稱</p>
-              <h5 style={{ fontWeight: 700 }}>NT $2000</h5>
-            </div>
-          </div>
-        </div>
+        </main>
       </div>
     </div>
   );

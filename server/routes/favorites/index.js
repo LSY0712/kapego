@@ -10,39 +10,13 @@ router.get("/", async (req, res) => {
 
     // 分別獲取三種類型的收藏
     const [product] = await pool.execute(
-      `SELECT f.*, p.name, p.description, pi.image_url, pv.price 
-       FROM favorites f
-       JOIN product p ON f.product_id = p.id
-       LEFT JOIN product_images pi ON p.id = pi.product_id AND pi.is_main = 1
-       LEFT JOIN product_variant pv ON p.id = pv.product_id
-       WHERE f.user_id = ? AND f.product_id != 0`,
+      `SELECT f.*, p.name, p.description, pi.image_path AS image_url, pv.price FROM favorites f JOIN product p ON f.product_id = p.id LEFT JOIN product_images pi ON p.id = pi.product_id AND pi.sort_order = 1 LEFT JOIN product_variant pv ON p.id = pv.product_id WHERE f.user_id = ? AND f.product_id != 0`,
       [userId]
     );
-
-    const [activity] = await pool.execute(
-      `SELECT f.*, a.name, a.introduction, ai.img_url as image_url, a.price
-       FROM favorites f
-       JOIN activity a ON f.activity_id = a.id
-       LEFT JOIN activity_image ai ON a.id = ai.activity_id AND ai.is_main = 1
-       WHERE f.user_id = ? AND f.activity_id != 0`,
-      [userId]
-    );
-
-    const [rental] = await pool.execute(
-      `SELECT f.*, ri.name, ri.description, rim.img_url as image_url, ri.price
-       FROM favorites f
-       JOIN rent_item ri ON f.rental_id = ri.id
-       LEFT JOIN rent_image rim ON ri.id = rim.rent_item_id AND rim.is_main = 1
-       WHERE f.user_id = ? AND f.rental_id != 0`,
-      [userId]
-    );
-
     res.json({
       success: true,
       data: {
         product,
-        activity,
-        rental,
       },
     });
   } catch (error) {

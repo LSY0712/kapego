@@ -1,6 +1,5 @@
 "use client";
-import orderActivity from "@/member/order/orderActivity/page";
-import orderProduct from "@/member/order/orderProduct/page";
+import orderProduct from "@/member/order/page";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { useEffect, useState } from "react";

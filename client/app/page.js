@@ -14,19 +14,18 @@ import Link from "next/link";
 import { useState } from "react";
 import Carousel from "./components/Swiper/Carousel";
 
-
 export default function Home() {
   // 設定串接資料
-  const [activity,setActivity] = useState([])
-  const [product,setProduct] = useState([])
-  const [article,setArticle] = useState([])
-  
+  const [activity, setActivity] = useState([]);
+  const [product, setProduct] = useState([]);
+  const [article, setArticle] = useState([]);
+
   return (
     <>
       <main>
         {/* KV */}
-        <Carousel/>
-        
+        <Carousel />
+
         {/* section start */}
         <div className={`container ${styles.sectionStart}`}>
           <div
@@ -124,7 +123,9 @@ export default function Home() {
                 進階深潛或技術潛水
               </button>
             </div>
-            <div className={`d-flex justify-content-sm-between justify-content-around w-100 ${styles.cards}`}>
+            <div
+              className={`d-flex justify-content-sm-between justify-content-around w-100 ${styles.cards}`}
+            >
               <div className={styles.card}>
                 <div className={styles.imgContainer}>
                   <div className={styles.circleIcons}>
@@ -286,9 +287,12 @@ export default function Home() {
                     <div className={styles.cardText}>
                       <p className={`${styles.p} ${styles.p1}`}>精彩活動</p>
                       <p className={`${styles.p} ${styles.p2}`}>
-                      發現海底的無限魅力，開啟你的潛水冒險
+                        發現海底的無限魅力，開啟你的潛水冒險
                       </p>
-                      <Link href="/activity" className={`${styles.p} ${styles.p3}`}>
+                      <Link
+                        href="/activity"
+                        className={`${styles.p} ${styles.p3}`}
+                      >
                         我們提供豐富多元的潛水活動
                       </Link>
                     </div>
@@ -306,7 +310,10 @@ export default function Home() {
                       <p className={`${styles.p} ${styles.p2}`}>
                         嚴選品質，確保每件商品經過嚴格檢驗
                       </p>
-                      <Link href="/products" className={`${styles.p} ${styles.p3}`}>
+                      <Link
+                        href="/products"
+                        className={`${styles.p} ${styles.p3}`}
+                      >
                         現在就去逛逛！
                       </Link>
                     </div>
@@ -348,7 +355,10 @@ export default function Home() {
                       <p className={`${styles.p} ${styles.p2}`}>
                         提供討論區讓學員交流心得，幫助您安心選擇課程與裝備
                       </p>
-                      <Link href="/article" className={`${styles.p} ${styles.p3}`}>
+                      <Link
+                        href="/article"
+                        className={`${styles.p} ${styles.p3}`}
+                      >
                         看看大家都在討論什麼
                       </Link>
                     </div>
@@ -363,7 +373,9 @@ export default function Home() {
         <div className={`container ${styles.section} ${styles.sectionCourse}`}>
           <h3 className={styles.h3}>零基礎學習，輕鬆進入深藍</h3>
           <div className={styles.cardsAndDots}>
-            <div className={`d-flex justify-content-sm-between justify-content-around`}>
+            <div
+              className={`d-flex justify-content-sm-between justify-content-around`}
+            >
               <div className={`${styles.card}`}>
                 <div className={styles.imgContainer}>
                   <img

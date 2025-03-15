@@ -53,6 +53,7 @@ export default function ProductCard({ product }) {
       alert("加入購物車失敗，請稍後再試");
     }
   };
+  console.log("product.main_image:", product.main_image);
 
   const renderPriceRange = () => {
     const minPrice = product.min_price || product.price;
@@ -72,15 +73,17 @@ export default function ProductCard({ product }) {
       <Link href={`/products/${product.id}`} className={styles.productLink}>
         <div className={styles.productImg}>
           <img
-            src={`/img/product/`}
+            src={`http://localhost:3005${
+              product.images?.[0]?.image_path || "/img/default.png"
+            }`}
             alt={product.name || "商品圖片"}
             style={{
               objectFit: "cover",
-              opacity: imageLoaded ? 1 : 0,
-              transition: "opacity 0.3s ease-in",
+              width: "100%",
+              height: "auto",
             }}
-            onLoadingComplete={() => setImageLoaded(true)}
           />
+
           <div className={styles.productOverlay}>
             <button
               className={styles.iconButton}
@@ -109,28 +112,7 @@ export default function ProductCard({ product }) {
           </div>
         </div>
 
-        {/* 顏色列表 */}
-        <div className={`d-flex justify-content-center gap-1 my-2`}>
-          {product.color && product.color.length > 0 ? (
-            product.color.map((color) => (
-              <div
-                key={color.color_id}
-                className={styles.saleCircle}
-                style={{
-                  backgroundColor: color.color_code,
-                  border: "1px solid #e0e0e0",
-                  cursor: "pointer",
-                }}
-                title={color.color_name}
-              />
-            ))
-          ) : (
-            <div className={styles.saleCircle} style={{ opacity: 0.3 }} />
-          )}
-        </div>
-
         <div className={styles.productInfo}>
-          {/* 這裡顯示系列名稱 */}
           <div className={styles.brandName}>
             {seriesMap[product.series] || "其他系列"}
           </div>

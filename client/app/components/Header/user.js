@@ -59,23 +59,24 @@ export default function User() {
         }}
       >
         {user ? (
-          <>
-            <MenuItem onClick={handleClose}>
+          [
+            <MenuItem key="favorite" onClick={handleClose}>
               <Link href="/member/favorite">我的收藏</Link>
-            </MenuItem>
-            <MenuItem onClick={handleClose}>
+            </MenuItem>,
+            <MenuItem key="account" onClick={handleClose}>
               <Link href="/member/account">帳戶設定</Link>
-            </MenuItem>
+            </MenuItem>,
             <MenuItem
+              key="logout"
               onClick={() => {
                 logout();
                 handleClose();
               }}
-              sx={{ color: "red", fontSize: "",}}
+              sx={{ color: "red" }}
             >
               登出
-            </MenuItem>
-          </>
+            </MenuItem>,
+          ]
         ) : (
           <MenuItem onClick={handleClose}>
             <Link href="/member/login">登入</Link>

@@ -169,7 +169,7 @@ export default function Footer() {
                                                 Email
                                             </h6>
                                             <p className="footer-list-p m-0">
-                                                DiveIn@gmail.com
+                                                kapego@gmail.com
                                             </p>
                                         </div>
                                     </div>
@@ -179,7 +179,7 @@ export default function Footer() {
                     </div>
                 </div>
                 <div className="footer-bottom text-center text-white">
-                    Copyright © 2025 DiveIn
+                    Copyright © 2025 Kapego
                 </div>
             </footer>
         </>

@@ -1,5 +1,5 @@
 "use client";
-import styles from "../Login.module.css";
+import styles from "./Login.module.css";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { useRouter } from "next/navigation";
@@ -68,7 +68,7 @@ const handleGoogleLogin = async () => {
     <div className={styles.loginPage}>
       <div className={styles.main}>
         <img
-          src="/image/logoblack.png"
+          src="/img/logoblack.png"
           alt="logo"
           className={styles.logo}
         />

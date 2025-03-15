@@ -85,7 +85,7 @@ export default function Header() {
             </button>
           </div>
           <div className="header-icon-container text-center">
-            <img src="/image/DiveIn-logo-dark-final.png" alt="Logo" />
+            <img src="/img/logowhite.png" alt="Logo" />
           </div>
           <div className="mobile-cart fs-4">
             <Link href="/cart" className="a text-black">

@@ -1,20 +1,17 @@
 import express from "express";
 import { pool } from "../../config/db.js";
 
-
 const router = express.Router();
 
 router.get("/:id", async (req, res) => {
   try {
-    const { id } = req.params;
+    const id = Number(req.params.id);
 
     // 查詢單一商品 + 系列名稱
     const productSql = `
       SELECT 
-        p.*, 
-        s.name AS series_name
+        p.*
       FROM product p
-      LEFT JOIN series s ON p.series = s.id
       WHERE p.id = ?
     `;
 
@@ -28,7 +25,7 @@ router.get("/:id", async (req, res) => {
 
     // 查詢圖片（如果有圖片表的話，假設是 product_images）
     const imagesSql = `
-      SELECT id, image_url
+      SELECT id, image_path
       FROM product_images
       WHERE product_id = ?
       ORDER BY sort_order ASC
@@ -39,7 +36,7 @@ router.get("/:id", async (req, res) => {
     // 整合資料
     const result = {
       ...product,
-      images: imageRows || []
+      images: imageRows || [],
     };
 
     res.json({ success: true, data: result });

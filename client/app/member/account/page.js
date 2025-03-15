@@ -6,7 +6,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import UploadAvatar from "@/member/components/UploadAvatar";
-import jwt from "jsonwebtoken";
+
 
 export default function Account() {
   const router = useRouter();
@@ -107,20 +107,20 @@ export default function Account() {
     const storedToken = localStorage.getItem("loginWithToken");
     console.log("🔍 Token:", storedToken); // ✅ 檢查 token
     if (loading) return;
-  
+
     // 沒有 user，重導到登入
     if (!user || !user.id) {
       router.replace("/member/login");
       return;
     }
-  
+
     // 沒有 profile，主動撈！
     if (!profile || !profile.id) {
       console.log("🚀 嘗試撈取個人資料...");
       getProfile(user.id); // 👉 這一行是關鍵
       return;
     }
-  
+
     // profile 有了，設置 userData
     setUserData({
       id: profile.id,
@@ -134,300 +134,279 @@ export default function Account() {
       emergency_phone: profile.emergency_phone || "",
       img: profile.img || "/img/default.png",
     });
-  
+
     console.log("✅ 已取得 profile:", profile);
   }, [user, profile, loading]);
   if (loading) return <p>加載中...</p>;
 
   return (
     <>
-      <div className={styles.content}>
-        {/* aside */}
-        <div className={styles.aside}>
-          <div className={styles.listBox}>
-            <div className={styles.asideTitle}>
-              <h5>會員中心</h5>
-            </div>
-            <div className={styles.asideContent}>
-              <div className={styles.ASpoint}>
-                <Link href="/member/account" className={styles.ASpoint}>
-                  <h6>我的帳戶</h6>
-                </Link>
+      <div className="container my-5">
+        <div className="row">
+          {/* aside */}
+          <aside className="col-md-3">
+  <div className={`${styles.listBox} shadow-sm rounded-3`}>
+    <div className={`${styles.asideTitle}`}>
+      <h5 className="fw-bold m-0">會員中心</h5>
+    </div>
+
+    <div className={`${styles.asideContent}`}>
+      <Link href="/member/account" className={`${styles.menuItem} ${styles.active}`}>
+        <i className="bi bi-person-fill me-2"></i>
+        <span>我的帳戶</span>
+      </Link>
+
+      <Link href="/member/order/orderRent" className={styles.menuItem}>
+        <i className="bi bi-bag-check-fill me-2"></i>
+        <span>我的訂單</span>
+      </Link>
+
+      <Link href="/member/favorite" className={styles.menuItem}>
+        <i className="bi bi-heart-fill me-2"></i>
+        <span>我的最愛</span>
+      </Link>
+    </div>
+  </div>
+</aside>
+          {/* main */}
+          <main className="col-md-9">
+            <h4 className="fw-bold mb-4 ms-4">我的帳戶</h4>
+            {/* 表單和頭像卡片區塊 */}
+            <div className={`${styles.sectionList}`}>
+              {/* 左側表單 */}
+              <div className="pe-5 flex-grow-1 border-end">
+                  <form>
+                    <div className="mb-4 row">
+                      <label className="col-sm-3 col-form-label">姓名</label>
+                      <div className="col-sm-9">
+                        <input
+                          type="text"
+                          name="name"
+                          value={userData.name || ""}
+                          className={`${styles.box2} ${styles.boxSame}`}
+                          onChange={handleInputChange}
+                          placeholder="姓名"
+                        />
+                      </div>
+                    </div>
+                    <div className="mb-4 row">
+                      <label className="col-sm-3 col-form-label">生日</label>
+                      <div className="col-sm-9">
+                        <input
+                          type="date"
+                          name="birthday"
+                          value={userData.birthday || ""}
+                          className={`${styles.box} ${styles.boxSame}`}
+                          onChange={handleInputChange}
+                          placeholder="生日"
+                        />
+                      </div>
+                    </div>
+                    <div className="mb-4 row">
+                      <label className="col-sm-3 col-form-label">
+                        手機號碼
+                      </label>
+                      <div className="col-sm-9">
+                        <input
+                          type="tel"
+                          name="phone"
+                          value={userData.phone || ""}
+                          className={`${styles.box1} ${styles.boxSame}`}
+                          onChange={handleInputChange}
+                          placeholder="手機號碼"
+                        />
+                      </div>
+                    </div>
+                    <div className="mb-4 row">
+                      <label className="col-sm-3 col-form-label">地址</label>
+                      <div className="col-sm-9">
+                        <input
+                          type="text"
+                          name="address"
+                          value={userData.address || ""}
+                          className={`${styles.box3} ${styles.boxSame}`}
+                          onChange={handleInputChange}
+                          placeholder="地址"
+                        />
+                      </div>
+                    </div>
+                    <div className="mb-4 row">
+                      <label className="col-sm-3 col-form-label">性別</label>
+                      <div className="col-sm-9 d-flex align-items-center">
+                        <div className="form-check me-3">
+                          <input
+                            type="radio"
+                            id="male"
+                            name="gender"
+                            value="male"
+                            checked={userData.gender === "male"} // ✅ 確保 `checked` 與 `gender` 匹配
+                            onChange={(e) =>
+                              setUserData((prev) => ({
+                                ...prev,
+                                gender: e.target.value,
+                              }))
+                            }
+                          />
+                          <label className="form-check-label" htmlFor="male">
+                            男性
+                          </label>
+                        </div>
+                        <div className="form-check me-3">
+                          <input
+                            type="radio"
+                            id="female"
+                            name="gender"
+                            value="female"
+                            checked={userData.gender === "female"}
+                            onChange={(e) =>
+                              setUserData((prev) => ({
+                                ...prev,
+                                gender: e.target.value,
+                              }))
+                            }
+                          />
+                          <label className="form-check-label" htmlFor="female">
+                            女性
+                          </label>
+                        </div>
+                        <div className="form-check">
+                          <input
+                            type="radio"
+                            id="other"
+                            name="gender"
+                            value="other"
+                            checked={userData.gender === "other"}
+                            onChange={(e) =>
+                              setUserData((prev) => ({
+                                ...prev,
+                                gender: e.target.value,
+                              }))
+                            }
+                          />
+                          <label className="form-check-label" htmlFor="other">
+                            其他
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  </form>
+                  <div className={`${styles.IBbtn}`}>
+                    <div
+                      className={`${styles.hvbtn}`}
+                      onClick={handleUpdateUser}
+                    >
+                      變更
+                    </div>
+                    <div
+                      className={`${styles.dfbtn}`}
+                      role="button"
+                      tabIndex="0"
+                      data-bs-toggle="modal"
+                      data-bs-target="#staticBackdrop"
+                    >
+                      修改密碼
+                    </div>
+                    {/* 第一個 Modal：發送驗證碼 */}
+                    <div
+                      className="modal fade"
+                      id="staticBackdrop"
+                      tabIndex="-1"
+                      aria-labelledby="staticBackdropLabel"
+                      aria-hidden="true"
+                      data-bs-backdrop="static"
+                      data-bs-keyboard="false"
+                    >
+                      <div className="modal-dialog">
+                        <div className="modal-content">
+                          <div className="modal-header">
+                            <h5
+                              className="modal-title"
+                              id="staticBackdropLabel"
+                            >
+                              發送驗證碼
+                            </h5>
+                            <button
+                              type="button"
+                              className="btn-close"
+                              data-bs-dismiss="modal"
+                              aria-label="關閉"
+                            ></button>
+                          </div>
+                          <div className="modal-body">
+                            請輸入您的電子郵件地址以接收驗證碼。
+                            {/* 可放置表單或其他輸入控件 */}
+                          </div>
+                          <div className="modal-footer">
+                            <button
+                              id="sendCodeBtn"
+                              type="button"
+                              className="btn btn-primary"
+                            >
+                              發送驗證碼
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* 第二個 Modal：修改密碼 */}
+                    <div
+                      className="modal fade"
+                      id="passwordModal"
+                      tabIndex="-1"
+                      aria-labelledby="passwordModalLabel"
+                      aria-hidden="true"
+                    >
+                      <div className="modal-dialog">
+                        <div className="modal-content">
+                          <div className="modal-header">
+                            <h5 className="modal-title" id="passwordModalLabel">
+                              修改密碼
+                            </h5>
+                            <button
+                              type="button"
+                              className="btn-close"
+                              data-bs-dismiss="modal"
+                              aria-label="關閉"
+                            ></button>
+                          </div>
+                          <div className="modal-body">
+                            請輸入新密碼。
+                            {/* 這裡可放置密碼修改的表單控件 */}
+                          </div>
+                          <div className="modal-footer">
+                            <button
+                              type="button"
+                              className="btn btn-secondary"
+                              data-bs-dismiss="modal"
+                            >
+                              取消
+                            </button>
+                            <button type="button" className="btn btn-primary">
+                              提交修改
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                
               </div>
-              <Link href="/member/order/orderRent" className={styles.ASother}>
-                <h6>我的訂單</h6>
-              </Link>
-              <Link href="/member/group" className={styles.ASother}>
-                <h6>我的揪團</h6>
-              </Link>
-              <Link href="/member/favorite" className={styles.ASother}>
-                <h6>我的最愛</h6>
-              </Link>
-              <Link href="/member/coupon" className={styles.ASother}>
-                <h6>我的優惠券</h6>
-              </Link>
-            </div>
-          </div>
-        </div>
-        {/* main */}
-        <div className={styles.main}>
-          <div className={styles.mainTitle}>
-            <h4>我的帳戶</h4>
-            <div className={styles.MTside}>
-              <p>我的帳戶</p>
-              <i className="bi bi-chevron-right" aria-label="Next"></i>
-              <p>個人資料</p>
-            </div>
-          </div>
-          <div className={styles.sectionList}>
-            <div className={styles.infoBox}>
-              <div className={styles.IBlist}>
-                <div className={styles.IBLTitle}>
-                  <p>姓名</p>
-                  <p>生日</p>
-                  <p>手機號碼</p>
-                  <p>地址</p>
-                  <p>性別</p>
-                  <p>緊急連絡人</p>
-                  <p>緊急連絡人電話</p>
-                  {/* <p>密碼</p> */}
-                </div>
-                <div className={styles.IBLcontent}>
-                  <input
-                    type="text"
-                    name="name"
-                    value={userData.name || ""}
-                    className={`${styles.box2} ${styles.boxSame}`}
-                    onChange={handleInputChange}
-                    placeholder="姓名"
-                  />
-                  <input
-                    type="date"
-                    name="birthday"
-                    value={userData.birthday || ""}
-                    className={`${styles.box} ${styles.boxSame}`}
-                    onChange={handleInputChange}
-                    placeholder="生日"
-                  />
+              {/* 右側大頭貼卡片 */}
 
-                  <input
-                    type="tel"
-                    name="phone"
-                    value={userData.phone || ""}
-                    className={`${styles.box1} ${styles.boxSame}`}
-                    onChange={handleInputChange}
-                    placeholder="手機號碼"
-                  />
-
-                  <input
-                    type="text"
-                    name="address"
-                    value={userData.address || ""}
-                    className={`${styles.box3} ${styles.boxSame}`}
-                    onChange={handleInputChange}
-                    placeholder="地址"
-                  />
-                  <div className={`form-check-inline ${styles.box4}`}>
-                    <div className={styles.boxlist}>
-                      <input
-                        type="radio"
-                        id="male"
-                        name="gender"
-                        value="male"
-                        checked={userData.gender === "male"} // ✅ 確保 `checked` 與 `gender` 匹配
-                        onChange={(e) =>
-                          setUserData((prev) => ({
-                            ...prev,
-                            gender: e.target.value,
-                          }))
-                        }
-                      />
-                      <label htmlFor="male" className="form-check-label">
-                        男性
-                      </label>
-
-                      <input
-                        type="radio"
-                        id="female"
-                        name="gender"
-                        value="female"
-                        checked={userData.gender === "female"}
-                        onChange={(e) =>
-                          setUserData((prev) => ({
-                            ...prev,
-                            gender: e.target.value,
-                          }))
-                        }
-                      />
-                      <label htmlFor="female" className="form-check-label">
-                        女性
-                      </label>
-
-                      <input
-                        type="radio"
-                        id="other"
-                        name="gender"
-                        value="other"
-                        checked={userData.gender === "other"}
-                        onChange={(e) =>
-                          setUserData((prev) => ({
-                            ...prev,
-                            gender: e.target.value,
-                          }))
-                        }
-                      />
-                      <label htmlFor="other" className="form-check-label">
-                        其他
-                      </label>
-                    </div>
-                  </div>
-                  <input
-                    type="text"
-                    name="emergency_contact"
-                    value={userData.emergency_contact || ""}
-                    className={`${styles.box1} ${styles.boxSame}`}
-                    onChange={handleInputChange}
-                    placeholder="緊急連絡人"
-                  />
-
-                  <input
-                    type="tel"
-                    name="emergency_phone"
-                    value={userData.emergency_phone || ""}
-                    className={`${styles.box1} ${styles.boxSame}`}
-                    onChange={handleInputChange}
-                    placeholder="緊急連絡人電話"
-                  />
-                </div>
-              </div>
-              <div className={`${styles.IBbtn}`}>
-                <div className={`${styles.hvbtn}`} onClick={handleUpdateUser}>
-                  變更
-                </div>
-                <div
-                  className={`${styles.dfbtn}`}
-                  role="button"
-                  tabIndex="0"
-                  data-bs-toggle="modal"
-                  data-bs-target="#staticBackdrop"
-                >
-                  修改密碼
-                </div>
-                {/* 第一個 Modal：發送驗證碼 */}
-                <div
-                  className="modal fade"
-                  id="staticBackdrop"
-                  tabIndex="-1"
-                  aria-labelledby="staticBackdropLabel"
-                  aria-hidden="true"
-                  data-bs-backdrop="static"
-                  data-bs-keyboard="false"
-                >
-                  <div className="modal-dialog">
-                    <div className="modal-content">
-                      <div className="modal-header">
-                        <h5 className="modal-title" id="staticBackdropLabel">發送驗證碼</h5>
-                        <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="關閉"></button>
-                      </div>
-                      <div className="modal-body">
-                        請輸入您的電子郵件地址以接收驗證碼。
-                        {/* 可放置表單或其他輸入控件 */}
-                      </div>
-                      <div className="modal-footer">
-                        <button id="sendCodeBtn" type="button" className="btn btn-primary">
-                          發送驗證碼
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* 第二個 Modal：修改密碼 */}
-                <div className="modal fade" id="passwordModal" tabIndex="-1" aria-labelledby="passwordModalLabel" aria-hidden="true">
-                  <div className="modal-dialog">
-                    <div className="modal-content">
-                      <div className="modal-header">
-                        <h5 className="modal-title" id="passwordModalLabel">修改密碼</h5>
-                        <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="關閉"></button>
-                      </div>
-                      <div className="modal-body">
-                        請輸入新密碼。
-                        {/* 這裡可放置密碼修改的表單控件 */}
-                      </div>
-                      <div className="modal-footer">
-                        <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">
-                          取消
-                        </button>
-                        <button type="button" className="btn btn-primary">
-                          提交修改
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                {/* <!-- Modal -->
-                <div className="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabIndex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                  <div className="modal-dialog modal-dialog-centered">
-                    <div className="modal-content">
-                      <div className="modal-header">
-                        <h1 className="modal-title fs-5" id="staticBackdropLabel">修改密碼</h1>
-                        <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                      </div>
-                      <div className="modal-body d-flex justify-content-center align-items-center flex-column m-2">
-                        <div className={`${styles.IBL1}`}>
-                          <p>舊密碼</p>
-                          <input
-                            type="password"
-                            value={userData.password}
-                            className={`${styles.IBL1box} `}
-                            onChange={(e) => setNewPassword(e.target.value)}
-                            placeholder="密碼"
-                          />
-                        </div>
-                        <div className={`${styles.IBL1}`}>
-                          <p>舊密碼</p>
-                          <input
-                            type="password"
-                            value={userData.password}
-                            className={`${styles.IBL1box} `}
-                            onChange={(e) => setNewPassword(e.target.value)}
-                            placeholder="密碼"
-                          />
-                        </div>
-                        <div className={`${styles.IBL1}`}>
-                          <p>舊密碼</p>
-                          <input
-                            type="password"
-                            value={userData.password}
-                            className={`${styles.IBL1box} `}
-                            onChange={(e) => setNewPassword(e.target.value)}
-                            placeholder="密碼"
-                          />
-                        </div>
-                        
-                      </div>
-                      <div className="modal-footer">
-                        <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">取消</button>
-                        <button type="button" className="btn btn-primary">修改密碼</button>
-                      </div>
-                    </div>
-                  </div>
-                </div> */}
+              <div className={`${styles.infoBox2}`}>
+                <UploadAvatar
+                  userId={user?.id}
+                  currentAvatar={profile?.img || "/img/default.png"}
+                  onUploadSuccess={(newImg) =>
+                    setUserData((prev) => ({ ...prev, img: newImg }))
+                  }
+                />
+                <p className="fw-bold mb-1">{userData.name || "使用者名稱"}</p>
+                <p className="text-muted mb-3">{userData.email}</p>
               </div>
             </div>
-            {/* 分隔線 */}
-            <div className={styles.line2}></div>
-            {/* 右邊格子 */}
-            <div className={styles.infoBox2}>
-              <UploadAvatar
-                userId={user?.id}
-                currentAvatar={profile?.img || "/img/default.png"}
-                onUploadSuccess={(newImg) =>
-                  setUserData((prev) => ({ ...prev, img: newImg }))
-                }
-              />
-            </div>
-          </div>
+          </main>
         </div>
       </div>
     </>
