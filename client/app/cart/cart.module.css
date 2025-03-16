@@ -141,16 +141,16 @@
   .checkoutBtn {
     width: 100%;
     padding: 12px;
-    background-color: var(--primary-color);
+    background-color: var(--hover);
     color: #fff;
     border: none;
     border-radius: 6px;
     cursor: pointer;
     font-size: 16px;
-    transition: background-color 0.3s;
+    transition:  0.3s;
   }
   
   .checkoutBtn:hover {
-    background-color: var(--primary-color-dark);
+    background-color: #a8a8a8;
   }
   

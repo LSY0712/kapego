@@ -1,4 +1,6 @@
-import { useRouter } from "next/router";
+"use client";
+
+import { useRouter } from "next/navigation"; 
 import { useEffect, useState } from "react";
 import axios from "axios";
 
@@ -38,3 +40,18 @@ export default function ProductDetail() {
     </div>
   );
 }
+// "use client"; // 確保這是 Client Component
+// import { useParams } from "next/navigation";
+
+// const ProductDetail = () => {
+//   const params = useParams();
+//   const id = params?.id; // 確保不會出錯
+
+//   if (!id) {
+//     return <div>⚠️ 找不到產品 ID</div>;
+//   }
+
+//   return <div>產品 ID: {id}</div>;
+// };
+
+// export default ProductDetail;

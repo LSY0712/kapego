@@ -155,7 +155,7 @@ export default function Favorite() {
                   className={`${styles.menuItem} ${styles.active}`}
                 >
                   <i className="bi bi-heart-fill me-2"></i>
-                  <span>我的最愛</span>
+                  <span>我的收藏</span>
                 </Link>
               </div>
             </div>

@@ -288,9 +288,8 @@
 }
 
 .originalPrice {
-  color: #808080;
-  text-decoration: line-through;
-  font-size: 0.9rem;
+  color: var(--hover);
+  font-size: 1.1rem;
 }
 
 /* 銷售標記 */

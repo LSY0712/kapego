@@ -200,7 +200,7 @@ export default function Account() {
                   }`}
                 >
                   <FaHeart className="me-2" size={16} />
-                  <span>我的最愛</span>
+                  <span>我的收藏</span>
                 </Link>
               </div>
             </div>

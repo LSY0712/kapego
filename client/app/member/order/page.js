@@ -111,7 +111,7 @@ export default function Order() {
               </Link>
               <Link href="/member/favorite" className={styles.menuItem}>
                 <i className="bi bi-heart-fill me-2"></i>
-                <span>我的最愛</span>
+                <span>我的收藏</span>
               </Link>
             </div>
           </div>
@@ -225,7 +225,7 @@ export default function Order() {
               <hr />
               {selectedOrder.items.products.map((item) => (
                 <div
-                  key={item.id}
+                  key={item.product_id}
                   className="d-flex justify-content-between mb-2"
                 >
                   <div>

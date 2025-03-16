@@ -38,25 +38,18 @@ export default function ProductCard({ product }) {
     e.stopPropagation();
 
     try {
-      if (!product.variant_id) {
-        alert("請選擇商品規格");
-        return;
-      }
-
       const userId = user?.id;
       if (!userId) {
         alert("請先登入才能加入購物車");
         return;
       }
-
+      
       const cartData = {
-        userId: userId,
-        type: "product",
-        variantId: product.variant_id,
-        quantity: 1,
+        productId: product.id, // ← 保證有傳！
+        quantity: 1, // ← 預設數量
       };
 
-      const success = await addToCart(userId, cartData);
+      const success = await addToCart(cartData);
 
       if (success) {
         showToast("商品已加入購物車");
@@ -72,16 +65,16 @@ export default function ProductCard({ product }) {
   const handleFavoriteClick = async (e) => {
     e.preventDefault();
     e.stopPropagation();
-  
+
     if (!user?.id) {
       alert("請先登入才能收藏商品");
       return;
     }
-  
+
     if (favoriteLoading) return;
-  
+
     const success = await toggleFavorite();
-  
+
     if (!success) {
       alert("收藏操作失敗，請稍後再試");
     }
@@ -135,9 +128,7 @@ export default function ProductCard({ product }) {
           </div>
 
           <div>{product.name || "商品名稱"}</div>
-          <div className={styles.originalPrice}>
-            NT${product.original_price}
-          </div>
+          <div className={styles.originalPrice}>NT${product.price}</div>
         </div>
       </Link>
     </div>
