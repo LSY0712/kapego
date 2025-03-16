@@ -11,6 +11,8 @@ import { pool } from "../../config/db.js";
 import path from "path";
 import fs from "fs";
 import { fileURLToPath } from "url";
+import { sendOtpMail } from "../../lib/mail.js";
+import { generateToken } from "../../lib/otp.js";
 
 dotenv.config();
 
@@ -66,6 +68,108 @@ const router = express.Router();
 router.use(cors(corsOptions));
 router.use(express.json());
 router.use(express.urlencoded({ extended: true }));
+
+// otp驗證碼
+router.post("/users/otp", async (req, res) => {
+  const { email } = req.body;
+
+  if (!email) {
+    return res.status(400).json({
+      success: false,
+      message: "請提供 Email！"
+    });
+  }
+
+  try {
+    const { token: otpToken } = generateToken();
+
+    // 查詢 OTP 是否存在
+    const [existing] = await pool.execute(
+      'SELECT * FROM otp WHERE email = ?',
+      [email]
+    );
+
+    if (existing.length > 0) {
+      // 更新 OTP
+      await pool.execute(
+        'UPDATE otp SET token = ?, expires_at = NOW() + INTERVAL 30 MINUTE WHERE email = ?',
+        [otpToken, email]
+      );
+    } else {
+      // 新增 OTP
+      await pool.execute(
+        'INSERT INTO otp (email, token, expires_at) VALUES (?, ?, NOW() + INTERVAL 30 MINUTE)',
+        [email, otpToken]
+      );
+    }
+
+    // 發送 email
+    await sendOtpMail('cathytest111@gmail.com', 'dfjlqunxlesrboea');
+
+    res.json({
+      success: true,
+      message: "驗證碼已寄出，請檢查您的信箱！"
+    });
+  } catch (error) {
+    console.error("❌ 發送 OTP 發生錯誤:", error);
+    res.status(500).json({
+      success: false,
+      message: "伺服器錯誤，無法寄送驗證碼"
+    });
+  }
+});
+// 重設密碼
+router.post("/users/reset-password", async (req, res) => {
+  const { email, token, password } = req.body;
+
+  if (!email || !token || !password) {
+    return res.status(400).json({
+      success: false,
+      message: "請填寫所有欄位"
+    });
+  }
+
+  try {
+    // 查找 OTP 驗證
+    const [rows] = await pool.execute(
+      'SELECT * FROM otp WHERE email = ? AND token = ? AND expires_at > NOW()',
+      [email, token]
+    );
+
+    if (rows.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "驗證碼錯誤或已過期"
+      });
+    }
+
+    // 更新密碼
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    await pool.execute(
+      'UPDATE users SET password = ? WHERE email = ?',
+      [hashedPassword, email]
+    );
+
+    // 刪除 OTP
+    await pool.execute(
+      'DELETE FROM otp WHERE email = ?',
+      [email]
+    );
+
+    res.json({
+      success: true,
+      message: "密碼已成功重設！"
+    });
+
+  } catch (error) {
+    console.error("❌ 重設密碼發生錯誤:", error);
+    res.status(500).json({
+      success: false,
+      message: "伺服器錯誤，無法重設密碼"
+    });
+  }
+});
 
 // 測試 API
 router.get("/", (req, res) => {
@@ -327,17 +431,38 @@ router.post("/users/google-login", async (req, res) => {
   }
 });
 
+// 上傳頭像
 router.post("/users/upload", upload.single("avatar"), async (req, res) => {
   try {
+    const { userId } = req.body;
+
+    if (!userId) {
+      return res.status(400).json({
+        status: "error",
+        message: "❌ 缺少使用者 ID",
+      });
+    }
+
     if (!req.file) {
-      return res.status(400).json({ message: "❌ 請選擇一張圖片" });
+      return res.status(400).json({
+        status: "error",
+        message: "❌ 請選擇一張圖片",
+      });
     }
 
     const imagePath = `/img/member/${req.file.filename}`;
-    console.log("📸 上傳成功，圖片路徑:", imagePath);
+
+    console.log("✅ 上傳成功，圖片路徑:", imagePath);
 
     const sql = "UPDATE users SET img = ? WHERE id = ?";
-    await pool.execute(sql, [imagePath, req.body.userId]);
+    const [result] = await pool.execute(sql, [imagePath, userId]);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({
+        status: "error",
+        message: "找不到該使用者，更新失敗",
+      });
+    }
 
     res.json({
       status: "success",
@@ -346,9 +471,13 @@ router.post("/users/upload", upload.single("avatar"), async (req, res) => {
     });
   } catch (err) {
     console.error("❌ 圖片存儲失敗:", err);
-    res.status(500).json({ message: "❌ 圖片存儲失敗" });
+    res.status(500).json({
+      status: "error",
+      message: "❌ 圖片存儲失敗",
+    });
   }
 });
+
 
 
 
@@ -434,88 +563,6 @@ router.post("/users/logout", checkToken, (req, res) => {
   }
 });
 
-router.get("/users/:id/favorite", checkToken, async (req, res) => {
-  const { id } = req.params;
-
-  if (parseInt(id) !== req.decoded.id) {
-    return res.status(403).json({ status: "error", message: "沒有權限" });
-  }
-
-  try {
-    const sql = `
-      SELECT p.id, p.name, p.price, p.img
-      FROM favorites f
-      JOIN products p ON f.product_id = p.id
-      WHERE f.user_id = ?
-    `;
-    const [rows] = await pool.execute(sql, [id]);
-
-    res.status(200).json({
-      status: "success",
-      data: rows,
-      message: "取得收藏清單成功",
-    });
-  } catch (err) {
-    res.status(500).json({ status: "error", message: err.message });
-  }
-});
-
-router.post("/users/:id/favorite", checkToken, async (req, res) => {
-  const { id } = req.params;
-  const { productId } = req.body;
-
-  if (parseInt(id) !== req.decoded.id) {
-    return res.status(403).json({ status: "error", message: "沒有權限" });
-  }
-
-  try {
-    // 查重
-    const [exists] = await pool.execute(
-      "SELECT * FROM favorites WHERE user_id = ? AND product_id = ?",
-      [id, productId]
-    );
-    if (exists.length > 0) {
-      return res.status(400).json({ status: "error", message: "已加入收藏" });
-    }
-
-    const sql = "INSERT INTO favorites (user_id, product_id) VALUES (?, ?)";
-    await pool.execute(sql, [id, productId]);
-
-    res.status(201).json({
-      status: "success",
-      message: "收藏成功",
-    });
-  } catch (err) {
-    res.status(500).json({ status: "error", message: err.message });
-  }
-});
-
-router.delete("/users/:id/favorite/:productId", checkToken, async (req, res) => {
-  const { id, productId } = req.params;
-
-  if (parseInt(id) !== req.decoded.id) {
-    return res.status(403).json({ status: "error", message: "沒有權限" });
-  }
-
-  try {
-    const sql = "DELETE FROM favorites WHERE user_id = ? AND product_id = ?";
-    const [result] = await pool.execute(sql, [id, productId]);
-
-    if (result.affectedRows === 0) {
-      return res.status(404).json({
-        status: "error",
-        message: "該收藏不存在",
-      });
-    }
-
-    res.status(200).json({
-      status: "success",
-      message: "成功移除收藏",
-    });
-  } catch (err) {
-    res.status(500).json({ status: "error", message: err.message });
-  }
-});
 
 
 router.post("/users/status", checkToken, (req, res) => {

@@ -1304,9 +1304,9 @@ CREATE TABLE `orders` (
 --
 
 INSERT INTO `orders` (`id`, `user_id`, `total_price`, `status`, `createdAt`, `updatedAt`, `payment_method`, `transaction_id`, `payment_time`, `payment_status`) VALUES
-(1, 1, 6300.00, 'paid', '2025-02-14 15:23:58', '2025-02-14 15:23:58', NULL, NULL, NULL, 'pending'),
-(2, 2, 7500.00, 'pending', '2025-02-14 15:23:58', '2025-02-14 15:23:58', NULL, NULL, NULL, 'pending'),
-(3, 2, 7500.00, 'pending', '2025-02-16 18:11:43', '2025-02-16 18:11:43', NULL, NULL, NULL, 'pending');
+(1, 60, 6300.00, 'paid', '2025-02-14 15:23:58', '2025-02-14 15:23:58', NULL, NULL, NULL, 'pending'),
+(2, 60, 7500.00, 'pending', '2025-02-14 15:23:58', '2025-02-14 15:23:58', NULL, NULL, NULL, 'pending'),
+(3, 60, 7500.00, 'pending', '2025-02-16 18:11:43', '2025-02-16 18:11:43', NULL, NULL, NULL, 'pending');
 
 -- --------------------------------------------------------
 

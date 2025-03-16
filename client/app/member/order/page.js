@@ -1,40 +1,94 @@
 "use client";
 
-import styles from "../account/account.module.css"; // 直接沿用
+import styles from "../account/account.module.css";
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import "bootstrap/dist/css/bootstrap.min.css";
+import { Modal, Button } from "react-bootstrap";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function Order() {
   const [orders, setOrders] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState(null);
 
-  // 模擬訂單資料（之後可以換 API）
   useEffect(() => {
     const fakeOrders = [
       {
-        id: "ORD20240312001",
-        date: "2024/03/12",
+        id: "2349029348203",
+        date: "2025-01-19",
         status: "已完成",
-        total: "$5,800",
+        total: "1798",
         items: [
-          { id: 1, name: "潛水呼吸管", qty: 1 },
-          { id: 2, name: "專業潛水面鏡", qty: 2 },
-        ],
-      },
-      {
-        id: "ORD20240228002",
-        date: "2024/02/28",
-        status: "配送中",
-        total: "$3,200",
-        items: [
-          { id: 3, name: "潛水蛙鞋", qty: 1 },
+          {
+            id: 1,
+            name: "BIO METAL PRO 手工潛水面鏡（經典海馬藍王）",
+            spec: "藍色・B款",
+            img: "/img/product/1/main.png",
+            price: 899,
+            originalPrice: 1000,
+            qty: 1,
+          },
+          {
+            id: 2,
+            name: "BIO METAL PRO 手工潛水面鏡（經典海馬藍王）",
+            spec: "藍色・B款",
+            img: "/img/product/1/main.png",
+            price: 899,
+            originalPrice: 1000,
+            qty: 1,
+          },
         ],
       },
     ];
     setOrders(fakeOrders);
   }, []);
 
+  // ✅ 點「訂單詳情」才去撈單筆資料
+  const fetchOrderDetail = async (orderId) => {
+    try {
+      const res = await fetch(`http://localhost:3005/api/orders/${orderId}/simple`);
+      const data = await res.json();
+
+      if (data.success) {
+        setSelectedOrder(data.data);
+        setShowModal(true);
+      } else {
+        toast.error("查詢訂單失敗");
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("系統錯誤");
+    }
+  };
+
+  const handleRebuy = async (orderId) => {
+    try {
+      const res = await fetch(`http://localhost:3005/api/orders/${orderId}/rebuy`, {
+        method: "POST",
+      });
+      const result = await res.json();
+
+      if (result.success) {
+        toast.success("已加入購物車！");
+      } else {
+        toast.error(result.message || "再買一次失敗");
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("再買一次失敗");
+    }
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setSelectedOrder(null);
+  };
+
   return (
     <div className="container my-5">
+      <ToastContainer position="top-right" autoClose={2000} />
       <div className="row">
         {/* 側邊選單 */}
         <aside className="col-md-3">
@@ -48,7 +102,10 @@ export default function Order() {
                 <i className="bi bi-person-fill me-2"></i>
                 <span>我的帳戶</span>
               </Link>
-              <Link href="/member/order" className={`${styles.menuItem} ${styles.active}`}>
+              <Link
+                href="/member/order"
+                className={`${styles.menuItem} ${styles.active}`}
+              >
                 <i className="bi bi-bag-check-fill me-2"></i>
                 <span>我的訂單</span>
               </Link>
@@ -69,34 +126,83 @@ export default function Order() {
               <p>目前沒有訂單紀錄。</p>
             ) : (
               orders.map((order) => (
-                <div key={order.id} className="border rounded-4 p-4 shadow-sm">
-                  <div className="d-flex justify-content-between mb-3 flex-wrap">
-                    <div>
-                      <p className="mb-1 fw-bold">訂單編號：{order.id}</p>
-                      <p className="mb-1 text-muted">日期：{order.date}</p>
-                      <p className={`mb-1 ${order.status === '已完成' ? 'text-success' : 'text-warning'}`}>
-                        狀態：{order.status}
-                      </p>
+                <div
+                  key={order.id}
+                  className="border rounded-4 p-0 shadow-sm overflow-hidden"
+                >
+                  {/* 訂單 header */}
+                  <div
+                    className="px-4 py-3 d-flex justify-content-between align-items-center"
+                    style={{ backgroundColor: "#a8a8a8", color: "#fff" }}
+                  >
+                    <div className="d-flex align-items-center gap-3 flex-wrap">
+                      <p className="mb-0 fw-bold">{order.date}</p>
+                      <p className="mb-0">訂單編號：{order.id}</p>
                     </div>
-                    <div className="text-end">
-                      <p className="mb-1 fw-bold">訂單金額</p>
-                      <p className="text-danger h5">{order.total}</p>
-                    </div>
+                    <div className="fw-bold">{order.status}</div>
                   </div>
 
-                  <hr />
-
-                  <div className="d-flex flex-column gap-2">
+                  {/* 商品清單 */}
+                  <div className="px-4 py-3 d-flex flex-column gap-3">
                     {order.items.map((item) => (
-                      <div key={item.id} className="d-flex justify-content-between">
-                        <p className="mb-0">{item.name}</p>
-                        <p className="mb-0">數量：{item.qty}</p>
+                      <div
+                        key={item.id}
+                        className="d-flex justify-content-between align-items-center border-bottom pb-3"
+                      >
+                        <div className="d-flex align-items-center gap-3">
+                          <img
+                            src={item.img}
+                            alt={item.name}
+                            style={{
+                              width: "100px",
+                              height: "100px",
+                              objectFit: "cover",
+                            }}
+                            className="rounded"
+                          />
+                          <div>
+                            <p className="mb-1 fw-bold">{item.name}</p>
+                            <p className="mb-1 text-muted">{item.spec}</p>
+                            <p className="mb-1">x{item.qty}</p>
+                          </div>
+                        </div>
+                        <div className="text-end">
+                          <p className="mb-1 text-muted">
+                            NT${item.originalPrice}
+                          </p>
+                          <p className="fw-bold text-danger">NT${item.price}</p>
+                        </div>
                       </div>
                     ))}
                   </div>
 
-                  <div className="text-end mt-4">
-                    <button className="btn btn-outline-primary btn-sm">訂單詳情</button>
+                  {/* 總計＆按鈕 */}
+                  <div className="px-4 py-3 d-flex justify-content-between align-items-center bg-white">
+                    <div className={`d-flex gap-2 ${styles.IBbtn}`}>
+                      {/* 再買一次 */}
+                      <div
+                        className={styles.hvbtn}
+                        role="button"
+                        onClick={() => handleRebuy(order.id)}
+                      >
+                        再買一次
+                      </div>
+
+                      {/* 訂單詳情 */}
+                      <div
+                        className={styles.dfbtn}
+                        role="button"
+                        onClick={() => fetchOrderDetail(order.id)}
+                      >
+                        訂單詳情
+                      </div>
+                    </div>
+                    <div className="text-end">
+                      <p className="mb-0 fw-bold">
+                        訂單金額：
+                        <span className="text-danger">NT${order.total}</span>
+                      </p>
+                    </div>
                   </div>
                 </div>
               ))
@@ -104,6 +210,47 @@ export default function Order() {
           </div>
         </main>
       </div>
+
+      {/* ===== Modal ===== */}
+      <Modal show={showModal} onHide={handleCloseModal} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>訂單詳情</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {selectedOrder && (
+            <>
+              <p>訂單編號：{selectedOrder.order.id}</p>
+              <p>日期：{selectedOrder.order.orderDate}</p>
+              <p>狀態：{selectedOrder.order.orderStatusText}</p>
+              <hr />
+              {selectedOrder.items.products.map((item) => (
+                <div
+                  key={item.id}
+                  className="d-flex justify-content-between mb-2"
+                >
+                  <div>
+                    <p className="fw-bold mb-0">{item.name}</p>
+                    <p className="text-muted mb-0">{item.color} / {item.size}</p>
+                  </div>
+                  <div className="text-end">
+                    <p className="mb-0">x{item.quantity}</p>
+                    <p className="text-danger mb-0">NT${item.price}</p>
+                  </div>
+                </div>
+              ))}
+              <hr />
+              <p className="fw-bold text-end">
+                訂單總金額：NT${selectedOrder.order.totalAmount}
+              </p>
+            </>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseModal}>
+            關閉
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 }

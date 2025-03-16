@@ -1,181 +1,143 @@
 import express from "express";
 import { pool } from "../../config/db.js";
+import { checkToken } from "../../middleware/auth.js";
 
 const router = express.Router();
 
-// 1. 取得收藏清單
-router.get("/", async (req, res) => {
-  try {
-    const userId = 1; // 之後從 JWT 取得
+// 🔒 所有收藏 API 都套用驗證
+router.use(checkToken);
 
-    // 分別獲取三種類型的收藏
-    const [product] = await pool.execute(
-      `SELECT f.*, p.name, p.description, pi.image_path AS image_url, pv.price FROM favorites f JOIN product p ON f.product_id = p.id LEFT JOIN product_images pi ON p.id = pi.product_id AND pi.sort_order = 1 LEFT JOIN product_variant pv ON p.id = pv.product_id WHERE f.user_id = ? AND f.product_id != 0`,
+// ✅ 取得收藏清單（只抓商品）
+router.get("/", async (req, res) => {
+  const userId = req.decoded.id;
+
+  try {
+    const [products] = await pool.execute(
+      `SELECT f.product_id, p.name, p.description, pi.image_path AS image_url, pv.price
+       FROM favorites f
+       JOIN product p ON f.product_id = p.id
+       LEFT JOIN product_images pi ON p.id = pi.product_id AND pi.sort_order = 1
+       LEFT JOIN product_variant pv ON p.id = pv.product_id
+       WHERE f.user_id = ? AND f.product_id != 0`,
       [userId]
     );
+
     res.json({
       success: true,
-      data: {
-        product,
-      },
+      data: products,
+      message: "取得商品收藏成功"
     });
   } catch (error) {
     console.error("取得收藏清單錯誤:", error);
     res.status(500).json({
       success: false,
-      message: "取得收藏清單失敗",
+      message: "取得收藏清單失敗"
     });
   }
 });
 
-// 加入收藏
-router.post("/add", async (req, res) => {
+// ✅ 加入收藏（單一或多個 product）
+router.post("/", async (req, res) => {
+  const userId = req.decoded.id;
+  const { productIds } = req.body;
+
+  if (!productIds || productIds.length === 0) {
+    return res.status(400).json({
+      success: false,
+      message: "請提供至少一個商品 ID"
+    });
+  }
+
+  const ids = Array.isArray(productIds) ? productIds : [productIds];
+
   try {
-    const userId = 1; // 之後從 JWT 取得
-    const { type, itemIds } = req.body;
-
-    // 基本驗證
-    if (!type || !itemIds) {
-      return res.status(400).json({
-        success: false,
-        message: "缺少必要參數",
-      });
-    }
-
-    // 確保 itemIds 是陣列
-    const ids = Array.isArray(itemIds) ? itemIds : [itemIds];
-
-    if (ids.length === 0) {
-      return res.status(400).json({
-        success: false,
-        message: "請提供至少一個項目ID",
-      });
-    }
-
-    // 驗證收藏類型
-    if (!["product", "activity", "rental"].includes(type)) {
-      return res.status(400).json({
-        success: false,
-        message: "無效的收藏類型",
-      });
-    }
-
-    // 檢查項目是否存在
-    const tableName =
-      type === "product"
-        ? "product"
-        : type === "activity"
-        ? "activity"
-        : "rent_item";
-
-    const [existingItems] = await pool.execute(
-      `SELECT id FROM ${tableName} WHERE id IN (${ids.join(",")})`
+    // 驗證商品是否存在
+    const [existingProducts] = await pool.execute(
+      `SELECT id FROM product WHERE id IN (${ids.join(",")})`
     );
 
-    // 檢查是否已經收藏
+    const existingIds = existingProducts.map((p) => p.id);
+    const invalidIds = ids.filter((id) => !existingIds.includes(id));
+
+    if (invalidIds.length > 0) {
+      return res.status(404).json({
+        success: false,
+        message: `找不到商品 ID: ${invalidIds.join(", ")}`
+      });
+    }
+
+    // 查找已收藏項目
     const [existingFavorites] = await pool.execute(
-      `SELECT ${type}_id FROM favorites 
-       WHERE user_id = ? AND ${type}_id IN (${ids.join(",")})`,
+      `SELECT product_id FROM favorites WHERE user_id = ? AND product_id IN (${ids.join(",")})`,
       [userId]
     );
 
-    // 過濾掉已經收藏的項目
-    const existingIds = existingFavorites.map((f) => f[`${type}_id`]);
-    const newIds = ids.filter((id) => !existingIds.includes(parseInt(id)));
+    const alreadyFavoriteIds = existingFavorites.map((f) => f.product_id);
+    const newIds = ids.filter((id) => !alreadyFavoriteIds.includes(id));
 
     if (newIds.length === 0) {
-      return res.status(200).json({
-        // 改為 200，因為這不是錯誤情況
+      return res.json({
         success: true,
-        message: "商品已在收藏中",
+        message: "這些商品已在收藏中"
       });
     }
 
-    // 準備批量插入的值
-    const values = newIds
-      .map((id) => {
-        return `(${userId}, ${type === "product" ? id : 0}, ${
-          type === "activity" ? id : 0
-        }, ${type === "rental" ? id : 0})`;
-      })
-      .join(",");
+    // 新增收藏
+    const values = newIds.map((id) => `(${userId}, ${id})`).join(", ");
 
-    // 批量插入收藏
     await pool.execute(
-      `INSERT INTO favorites 
-       (user_id, product_id, activity_id, rental_id) 
-       VALUES ${values}`
+      `INSERT INTO favorites (user_id, product_id) VALUES ${values}`
     );
 
     res.json({
       success: true,
-      message: "已加入收藏",
+      message: "商品已成功加入收藏"
     });
   } catch (error) {
     console.error("加入收藏錯誤:", error);
     res.status(500).json({
       success: false,
-      message: "加入收藏失敗",
+      message: "加入商品收藏失敗"
     });
   }
 });
 
-// 移除收藏
-router.post("/remove", async (req, res) => {
+// ✅ 移除收藏（單一或多個 product）
+router.delete("/", async (req, res) => {
+  const userId = req.decoded.id;
+  const { productIds } = req.body;
+
+  if (!productIds || productIds.length === 0) {
+    return res.status(400).json({
+      success: false,
+      message: "請提供至少一個商品 ID"
+    });
+  }
+
+  const ids = Array.isArray(productIds) ? productIds : [productIds];
+
   try {
-    const userId = 1; // 之後從 JWT 取得
-    const { type, itemIds } = req.body;
-
-    // 基本驗證
-    if (!type || !itemIds) {
-      return res.status(400).json({
-        success: false,
-        message: "缺少必要參數",
-      });
-    }
-
-    // 確保 itemIds 是陣列
-    const ids = Array.isArray(itemIds) ? itemIds : [itemIds];
-
-    if (ids.length === 0) {
-      return res.status(400).json({
-        success: false,
-        message: "請提供至少一個項目ID",
-      });
-    }
-
-    // 驗證收藏類型
-    if (!["product", "activity", "rental"].includes(type)) {
-      return res.status(400).json({
-        success: false,
-        message: "無效的收藏類型",
-      });
-    }
-
-    // 檢查項目是否在收藏中並直接刪除
     const [result] = await pool.execute(
-      `DELETE FROM favorites 
-       WHERE user_id = ? AND 
-       ${type}_id IN (${ids.join(",")})`,
+      `DELETE FROM favorites WHERE user_id = ? AND product_id IN (${ids.join(",")})`,
       [userId]
     );
 
     if (result.affectedRows === 0) {
-      return res.status(400).json({
+      return res.status(404).json({
         success: false,
-        message: "沒有找到要移除的收藏項目",
+        message: "沒有找到對應的商品收藏"
       });
     }
 
     res.json({
       success: true,
-      message: "已移除收藏",
+      message: "商品已成功移除收藏"
     });
   } catch (error) {
     console.error("移除收藏錯誤:", error);
     res.status(500).json({
       success: false,
-      message: "移除收藏失敗",
+      message: "移除商品收藏失敗"
     });
   }
 });

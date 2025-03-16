@@ -1,6 +1,6 @@
 "use client";
 import { useAuth } from "@/hooks/use-auth";
-import styles from "./Login.module.css";
+import styles from "../login/Login.module.css";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -104,7 +104,7 @@ export default function Register() {
     <div className={styles.loginPage}>
       <div className={styles.main}>
         <img
-          src="/image/DiveIn-logo-dark-final.png"
+          src="/img/logoblack.png"
           alt="logo"
           className={styles.logo}
         />

@@ -4,7 +4,7 @@ import { FaSearch, FaBars } from "react-icons/fa";
 import User from "./user";
 import { FiShoppingCart } from "react-icons/fi";
 import Link from "next/link";
-import HeaderPop from "./headerPop"; // 引入 HeaderPop 組件
+// import HeaderPop from "./headerPop"; // 引入 HeaderPop 組件
 
 export default function Header() {
   const [showPop, setShowPop] = useState(false);
@@ -62,7 +62,7 @@ export default function Header() {
               </li>
             </ul>
           </div>
-          <HeaderPop show={showPop} activeMenu={activeMenu} />
+          {/* <HeaderPop show={showPop} activeMenu={activeMenu} /> */}
           <div className="header-right-box d-flex justify-content-end align-items-center">
             <a href="/cart/step1" className="header-cart a" id="cart-icon">
               <FiShoppingCart size={20}/>
@@ -131,106 +131,7 @@ export default function Header() {
               >
                 商品
               </button>
-              <div className="mobile-collapse collapse mt-3" id="product-menu">
-                <ul className="list-group">
-                  <li className="list-group-item">
-                    <a className="a text-reset" href="#">
-                      面鏡／呼吸管
-                    </a>
-                  </li>
-                  <li className="list-group-item">
-                    <a className="a text-reset" href="#">
-                      蛙鞋
-                    </a>
-                  </li>
-                  <li className="list-group-item">
-                    <a className="a text-reset" href="#">
-                      潛水配件
-                    </a>
-                  </li>
-                  <li className="list-group-item">
-                    <a className="a text-reset" href="#">
-                      電子裝備／專業配件
-                    </a>
-                  </li>
-                  <li className="list-group-item">
-                    <a className="a text-reset" href="#">
-                      防寒衣物
-                    </a>
-                  </li>
-                  <li className="list-group-item">
-                    <a className="a text-reset" href="#">
-                      包包攜行
-                    </a>
-                  </li>
-                  <li className="list-group-item">
-                    <a className="a text-reset" href="#">
-                      魚槍／配件
-                    </a>
-                  </li>
-                  <li className="list-group-item">
-                    <a className="a text-reset" href="#">
-                      生活小物
-                    </a>
-                  </li>
-                </ul>
-              </div>
             </li>
-            <li className="px-3 py-2">
-              <button
-                className="btn dropdown-toggle p-0 text-reset"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#forum-menu"
-              >
-                論壇
-              </button>
-              <div className="mobile-collapse collapse mt-3" id="forum-menu">
-                <ul className="list-group">
-                  <li className="list-group-item">
-                    <a className="a text-reset" href="#">
-                      綜合討論
-                    </a>
-                  </li>
-                  <li className="list-group-item">
-                    <a className="a text-reset" href="#">
-                      潛水心得
-                    </a>
-                  </li>
-                  <li className="list-group-item">
-                    <a className="a text-reset" href="#">
-                      裝備討論
-                    </a>
-                  </li>
-                  <li className="list-group-item">
-                    <a className="a text-reset" href="#">
-                      水攝攝影
-                    </a>
-                  </li>
-                </ul>
-              </div>
-            </li>
-{/*             
-            <li className="px-3 py-2">
-              <a className="a text-reset" href="#">
-                活動
-              </a>
-            </li>
-            <li className="px-3 py-2">
-              <a className="a text-reset" href="#">
-                租借
-              </a>
-            </li>
-            <li className="px-3 py-2">
-              <a className="a text-reset" href="#">
-                揪團
-              </a>
-            </li>
-            <li className="px-3 pt-2 pb-4">
-              <a className="a text-reset" href="#">
-                論壇
-              </a>
-            </li> */}
           </ul>
           <div className="border-bottom">
             <h5 className="px-3 pt-4 py-2 text-secondary">帳戶</h5>

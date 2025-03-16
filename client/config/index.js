@@ -20,6 +20,13 @@ const production = {
   avatarURL: "https://xxxxx.vercel.app/avatar",
   nextUrl: "https://xxxxx.vercel.app",
 };
+// gmail
+  // smtp: {
+  //   provider: 'gmail',
+  //   host: 'smtp.gmail.com',
+  //   user: 'xxxxxx@gmail.com',
+  //   pass: 'xxxxxxxx',
+  // },
 
 export const apiURL = isDev ? local.apiURL : production.apiURL;
 export const serverURL = isDev ? local.serverURL : production.serverURL;

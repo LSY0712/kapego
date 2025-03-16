@@ -1,11 +1,24 @@
 "use client";
 import { useState } from "react";
-import { FaRegUser } from "react-icons/fa";
-import { Menu, MenuItem, IconButton } from "@mui/material";
+import {
+  FaRegUser,
+  FaHeart,
+  FaUserCog,
+  FaClipboardList,
+  FaSignOutAlt,
+} from "react-icons/fa";
+import {
+  Menu,
+  MenuItem,
+  IconButton,
+  ListItemIcon,
+  ListItemText,
+  Divider,
+} from "@mui/material";
 import Link from "next/link";
 import { useAuth } from "@/hooks/use-auth";
 
-export default function User() {
+export default function UserMenu() {
   const { user, logout } = useAuth();
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -17,31 +30,36 @@ export default function User() {
   const handleClose = () => {
     setAnchorEl(null);
   };
+
   console.log("當前用戶狀態:", user);
 
   return (
-    // FIXME: 修正下拉選單位置
     <div>
+      {/* 已登入：顯示 IconButton，未登入：顯示 Link */}
       {user && user !== -1 ? (
         <IconButton
           onClick={handleClick}
           sx={{
-            color: "white", // 確保 icon 顯示出來
+            color: "#fff",
+            p: 1,
             zIndex: 1200,
           }}
         >
-          <FaRegUser size={20} />
+          <FaRegUser size={18} />
         </IconButton>
       ) : (
         <Link href="/member/login" className="header-cart a">
-          <FaRegUser size={20} color="white" />
+          <IconButton sx={{ color: "#fff" }}>
+            <FaRegUser size={20} />
+          </IconButton>
         </Link>
       )}
 
+      {/* 下拉選單 */}
       <Menu
-        anchorEl={anchorEl} // 讓選單靠著按鈕顯示
-        open={open} // 控制開關
-        onClose={handleClose} // 點外面就關閉
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleClose}
         anchorOrigin={{
           vertical: "bottom",
           horizontal: "right",
@@ -53,35 +71,81 @@ export default function User() {
         PaperProps={{
           sx: {
             mt: 4,
+            borderRadius: 2,
+            boxShadow: "0px 4px 16px rgba(0,0,0,0.2)",
+            minWidth: 180,
             zIndex: 1200,
-            minWidth: 130,
+            p: 1,
           },
         }}
       >
-        {user ? (
-          [
-            <MenuItem key="favorite" onClick={handleClose}>
-              <Link href="/member/favorite">我的收藏</Link>
-            </MenuItem>,
-            <MenuItem key="account" onClick={handleClose}>
-              <Link href="/member/account">帳戶設定</Link>
-            </MenuItem>,
-            <MenuItem
-              key="logout"
-              onClick={() => {
-                logout();
-                handleClose();
-              }}
-              sx={{ color: "red" }}
-            >
-              登出
-            </MenuItem>,
-          ]
-        ) : (
-          <MenuItem onClick={handleClose}>
-            <Link href="/member/login">登入</Link>
-          </MenuItem>
-        )}
+        {user
+          ? [
+              <MenuItem onClick={handleClose} sx={{ py: 1 }} key="account">
+                <ListItemIcon>
+                  <FaUserCog size={16} />
+                </ListItemIcon>
+                <Link
+                  href="/member/account"
+                  className="text-decoration-none text-dark"
+                >
+                  帳戶設定
+                </Link>
+              </MenuItem>,
+
+              <MenuItem onClick={handleClose} sx={{ py: 1 }} key="order">
+                <ListItemIcon>
+                  <FaClipboardList size={16} />
+                </ListItemIcon>
+                <Link
+                  href="/member/order"
+                  className="text-decoration-none text-dark"
+                >
+                  我的訂單
+                </Link>
+              </MenuItem>,
+
+              <MenuItem onClick={handleClose} sx={{ py: 1 }} key="favorite">
+                <ListItemIcon>
+                  <FaHeart size={16} />
+                </ListItemIcon>
+                <Link
+                  href="/member/favorite"
+                  className="text-decoration-none text-dark"
+                >
+                  我的收藏
+                </Link>
+              </MenuItem>,
+
+              <Divider sx={{ my: 1 }} key="divider" />,
+
+              <MenuItem
+                onClick={() => {
+                  logout();
+                  handleClose();
+                }}
+                sx={{ color: "red", py: 1 }}
+                key="logout"
+              >
+                <ListItemIcon>
+                  <FaSignOutAlt size={16} color="red" />
+                </ListItemIcon>
+                <span>登出</span>
+              </MenuItem>,
+            ]
+          : [
+              <MenuItem onClick={handleClose} key="login">
+                <ListItemIcon>
+                  <FaRegUser size={16} />
+                </ListItemIcon>
+                <Link
+                  href="/member/login"
+                  className="text-decoration-none text-dark"
+                >
+                  登入
+                </Link>
+              </MenuItem>,
+            ]}
       </Menu>
     </div>
   );

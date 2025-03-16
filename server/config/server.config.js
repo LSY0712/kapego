@@ -24,8 +24,8 @@ export const serverConfig = {
   smtp: {
     provider: "gmail",
     host: "smtp.gmail.com",
-    user: "diveinmfee60@gmail.com",
-    pass: "kksy hfzp olwm csvd",
+    user: "cathy111@gmail.com",
+    pass: "dfjlqunxlesrboea",
   },
   jwt: {
     secret: "access_token_secret",
@@ -35,27 +35,27 @@ export const serverConfig = {
     expire: 5 * 60 * 1000, // 5 分鐘
   },
   // local development
-  lineLogin: {
-    development: {
-      channelId: "123456789",
-      channelSecret: "xxxxxxxxxxxx",
-      callbackUrl: "http://localhost:3000/user/line-login",
-    },
-    production: {
-      channelId: "",
-      channelSecret: "",
-      callbackUrl: "https://xxxxx.vercel.app/user/line-login",
-    },
-  },
+  // lineLogin: {
+  //   development: {
+  //     channelId: "123456789",
+  //     channelSecret: "xxxxxxxxxxxx",
+  //     callbackUrl: "http://localhost:3000/user/line-login",
+  //   },
+  //   production: {
+  //     channelId: "",
+  //     channelSecret: "",
+  //     callbackUrl: "https://xxxxx.vercel.app/user/line-login",
+  //   },
+  // },
   // 前端接回導向的網址
-  ship711: {
-    development: {
-      callbackUrl: "http://localhost:3000/ship/callback",
-    },
-    production: {
-      callbackUrl: "https://xxxxx.vercel.app/ship/callback",
-    },
-  },
+  // ship711: {
+  //   development: {
+  //     callbackUrl: "http://localhost:3000/ship/callback",
+  //   },
+  //   production: {
+  //     callbackUrl: "https://xxxxx.vercel.app/ship/callback",
+  //   },
+  // },
   linePay: {
     development: {
       channelId: "2006945295",
@@ -70,14 +70,4 @@ export const serverConfig = {
       cancelUrl: "https://next-app-raw.vercel.app/line-pay/cancel",
     },
   },
-  // 目前沒有使用這個設定，直接寫在 routes/ecpay-test-only.js 中
-  // ecpay: {
-  //   test: true,
-  //   merchantId: '3002607',
-  //   hashKey: 'pwFHCqoQZGmho4w6',
-  //   hashIV: 'EkRm7iFT261dpevs',
-  //   returnUrl: 'http://localhost:3005/test/ecpay/callback',
-  //   clientOrderResultUrl: 'http://localhost:3005/api/ecpay/result',
-  //   orderCallbackUrl: 'http://localhost:3000/test/ecpay/callback',
-  // },
 };
