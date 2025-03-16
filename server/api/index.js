@@ -10,7 +10,7 @@ import createError from "http-errors";
 // 路由模組
 import productRouter from "../routes/products/index.js";
 import favoritesRouter from "../routes/favorites/index.js";
-import cartRouter from "../routes/cart/index.js";
+import cartRouter from "../routes/cart/index.js"; 
 import checkoutRouter from "../routes/checkout/index.js";
 import ecpayRouter from "../routes/ecpay/index.js";
 import linepayRouter from "../routes/linepay/index.js";
@@ -51,22 +51,12 @@ app.use("/api", apiRouter);
 
 // 產品相關
 apiRouter.use("/products", productRouter);
-
-// 收藏
 apiRouter.use("/favorites", favoritesRouter);
-
-// 購物車
 apiRouter.use("/cart", cartRouter);
-
-// 結帳、付款
 apiRouter.use("/checkout", checkoutRouter);
 apiRouter.use("/ecpay", ecpayRouter);
 apiRouter.use("/linepay", linepayRouter);
-
-// 訂單
 apiRouter.use("/order", orderRouter);
-
-// 會員
 apiRouter.use("/member", memberRouter);
 
 // 捕捉 404 錯誤

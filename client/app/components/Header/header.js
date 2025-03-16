@@ -64,7 +64,7 @@ export default function Header() {
           </div>
           {/* <HeaderPop show={showPop} activeMenu={activeMenu} /> */}
           <div className="header-right-box d-flex justify-content-end align-items-center">
-            <a href="/cart/step1" className="header-cart a" id="cart-icon">
+            <a href="/cart" className="header-cart a" id="cart-icon">
               <FiShoppingCart size={20}/>
             </a>
             <User />

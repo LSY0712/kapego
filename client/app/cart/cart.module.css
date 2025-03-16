@@ -1,0 +1,156 @@
+/* 購物車頁面樣式 */
+
+.cartContainer {
+    padding: 40px 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .title {
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #333;
+  }
+  
+  .emptyCart {
+    text-align: center;
+    padding: 60px 20px;
+  }
+  
+  .emptyCart p {
+    font-size: 18px;
+    margin-bottom: 20px;
+  }
+  
+  .secondaryBtn {
+    background-color: var(--hover);
+    border: none;
+    border-radius: 6px;
+    width: 127px;
+    height: 40px;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .secondaryBtn:hover {
+    background-color: var(--secondary-color);
+  }
+  
+  .cartContent {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+  }
+  
+  .cartItems {
+    flex: 1;
+    min-width: 60%;
+  }
+  
+  .cartItem {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #eee;
+    padding: 20px 0;
+  }
+  
+  .cartItem img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 6px;
+  }
+  
+  .details {
+    flex: 1;
+    margin-left: 20px;
+  }
+  
+  .details h4 {
+    font-size: 16px;
+    margin-bottom: 5px;
+  }
+  
+  .details p {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 10px;
+  }
+  
+  .qtyControl {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .qtyControl button {
+    width: 30px;
+    height: 30px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    cursor: pointer;
+  }
+  
+  .subtotal {
+    width: 100px;
+    text-align: right;
+    font-weight: bold;
+  }
+  
+  .removeBtn {
+    background: none;
+    border: none;
+    color: #999;
+    cursor: pointer;
+    font-size: 20px;
+  }
+  
+  .removeBtn:hover {
+    color: #ff4d4f;
+  }
+  
+  .summary {
+    flex: 0 0 300px;
+    padding: 20px;
+    border: 1px solid #eee;
+    border-radius: 6px;
+    background-color: #f9f9f9;
+    height: fit-content;
+  }
+  
+  .summary h4 {
+    font-size: 20px;
+    margin-bottom: 20px;
+  }
+  
+  .summaryRow,
+  .summaryRowTotal {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  
+  .summaryRowTotal {
+    font-size: 18px;
+    font-weight: bold;
+  }
+  
+  .checkoutBtn {
+    width: 100%;
+    padding: 12px;
+    background-color: var(--primary-color);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+  }
+  
+  .checkoutBtn:hover {
+    background-color: var(--primary-color-dark);
+  }
+  
