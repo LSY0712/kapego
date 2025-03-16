@@ -232,7 +232,7 @@ body {
   z-index: 10;
   transition: background-color 0.3s ease;
   &:hover {
-    background-color: #ffa500 !important;
+    background-color: #95001d !important;
   }
   &::after {
     font-size: 16px !important;
@@ -242,11 +242,11 @@ body {
 
 /* Swiper 分頁指示點 */
 .swiper-pagination-bullet {
-  background-color: white !important;
+  background-color: #a8a8a8 !important;
   width: 12px;
   height: 12px;
 }
 
 .swiper-pagination-bullet-active {
-  background-color: #ffa500 !important;
+  background-color: white !important;
 }

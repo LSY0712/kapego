@@ -1,12 +1,30 @@
-"use client"; // 讓 Next.js 確保這個元件只在 Client Side 執行
+"use client";
 
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
-import "swiper/css"; // 基本 Swiper 樣式
-import "swiper/css/navigation"; // 上一頁/下一頁按鈕
-import "swiper/css/pagination"; // 頁面指示點
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
 import Link from "next/link";
-import styles from "./swiper.module.css"
+import styles from "./swiper.module.css";
+
+const kvSlides = [
+  {
+    img: "/img/20241106132451l0svy.jpg",
+    title: "點亮每一個建築靈魂",
+    subTitle: "專業戶外照明，精工打造，呈現建築最真實的質感。",
+  },
+  {
+    img: "/img/20241106125108dn198.jpg",
+    title: "德國設計 × 東莞製造",
+    subTitle: "融合德國工藝與東方精密，專注於每一道光影的細節。",
+  },
+  // {
+  //   img: "/image/kv-lighting-03.jpg",
+  //   title: "戶外燈光解決方案專家",
+  //   subTitle: "從景觀到建築，Kapego 提供全方位 LED 照明系統。",
+  // },
+];
 
 const Carousel = () => {
   return (
@@ -20,69 +38,24 @@ const Carousel = () => {
       loop={true}
       className="swiper"
     >
-      <SwiperSlide>
-      <div className={`${styles.kv}`}>
+      {kvSlides.map((slide, index) => (
+        <SwiperSlide key={index}>
           <div
-            className={`w-100 d-flex justify-content-between align-items-center`}
+            className={styles.kvCommon}
+            style={{ backgroundImage: `url(${slide.img})` }}
           >
             <div className="text-center w-100">
-              <div
-                className={`text-center d-flex flex-column ${styles.kvText}`}
-              >
-                <h1 className={styles.h1}>探索無重力的寧靜與神秘</h1>
-                <p className={`${styles.p} d-none d-sm-block`}>
-                  "It's not just diving; it's a new way of life."
-                </p>
+              <div className={`d-flex flex-column ${styles.kvText}`}>
+                <h1>{slide.title}</h1>
+                <p className="d-none d-sm-block">{slide.subTitle}</p>
               </div>
               <Link href="/products">
-                <button className={styles.scondaryBtn}>馬上逛逛</button>
+                <button className={styles.secondaryBtn}>馬上逛逛</button>
               </Link>
             </div>
           </div>
-        </div>
-      </SwiperSlide>
-      <SwiperSlide>
-      <div className={`${styles.kv}`}>
-          <div
-            className={`w-100 d-flex justify-content-between align-items-center`}
-          >
-            <div className="text-center w-100">
-              <div
-                className={`text-center d-flex flex-column ${styles.kvText}`}
-              >
-                <h1 className={styles.h1}>探索無重力的寧靜與神秘</h1>
-                <p className={`${styles.p} d-none d-sm-block`}>
-                  "It's not just diving; it's a new way of life."
-                </p>
-              </div>
-              <Link href="/products">
-                <button className={styles.scondaryBtn}>馬上逛逛</button>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </SwiperSlide>
-      <SwiperSlide>
-      <div className={`${styles.kv}`}>
-          <div
-            className={`w-100 d-flex justify-content-between align-items-center`}
-          >
-            <div className="text-center w-100">
-              <div
-                className={`text-center d-flex flex-column ${styles.kvText}`}
-              >
-                <h1 className={styles.h1}>探索無重力的寧靜與神秘</h1>
-                <p className={`${styles.p} d-none d-sm-block`}>
-                  "It's not just diving; it's a new way of life."
-                </p>
-              </div>  
-              <Link href="/products">
-                <button className={styles.scondaryBtn}>馬上逛逛</button>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </SwiperSlide>
+        </SwiperSlide>
+      ))}
     </Swiper>
   );
 };
