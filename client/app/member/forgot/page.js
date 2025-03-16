@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import styles from "./Login.module.css";
+import styles from "../login/Login.module.css";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Link from "next/link";
@@ -19,7 +19,7 @@ export default function ForgotPassword() {
     }
 
     try {
-      const res = await fetch("http://localhost:3005/api/member/otp", {
+      const res = await fetch("http://localhost:3005/api/member/users/otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
@@ -45,7 +45,7 @@ export default function ForgotPassword() {
     }
 
     try {
-      const res = await fetch("http://localhost:3005/api/member/reset-password", {
+      const res = await fetch("http://localhost:3005/api/member/users/reset-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, token: otp, password: newPassword }),

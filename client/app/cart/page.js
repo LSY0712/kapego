@@ -1,14 +1,16 @@
 "use client";
 import { useCart } from "@/hooks/cartContext";
+import { useAuth } from "@/hooks/use-auth";   // 引入 useAuth！
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import styles from "./cart.module.css";
 import { FiTrash2 } from "react-icons/fi";
+import axios from "axios";
 
 export default function Cart() {
   const { cartData, fetchCart, updateQuantity, removeFromCart, loading } = useCart();
+  const { user } = useAuth();  // 這裡拿 user 出來
   const [checkoutLoading, setCheckoutLoading] = useState(false);
-
 
   useEffect(() => {
     fetchCart();
@@ -39,34 +41,40 @@ export default function Cart() {
   };
 
   const handleCheckout = async () => {
+    if (!user || !user.id) {
+      alert("請先登入！");
+      return;
+    }
+  
     setCheckoutLoading(true);
+  
     try {
-      const res = await fetch("http://localhost:3005/api/cart/checkout", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          userId: cartData[0]?.userId || 1, // 👈 或從 useAuth 抓 user?.id
-        }),
+      const response = await axios.post("http://localhost:3005/api/cart/checkout", {
+        userId: user.id,
+        totalPrice: subtotal,
+        items: products
       });
-
-      const data = await res.json();
-
-      if (data.success) {
-        alert("✅ 結帳成功！訂單已成立");
-        // 👉 可以跳轉到訂單頁，或清空購物車
-        fetchCart(); // 重新取得購物車，會是空的
+  
+      if (response.data.success) {
+        alert("結帳完成");
+  
+        // ✅ 刷新購物車 ➜ 重新 fetch 新購物車（空的）
+        fetchCart();
+  
+        // ✅ 或跳轉到訂單頁
+        router.push("/memeber/order");
       } else {
-        alert("❌ 結帳失敗：" + data.message);
+        alert("結帳失敗: " + response.data.message);
       }
     } catch (error) {
-      console.error("🔥 結帳錯誤:", error);
-      alert("❌ 結帳時發生錯誤，請稍後再試");
+      console.error("🔥 Checkout 發生錯誤:", error);
+      alert("系統錯誤，請稍後再試！");
     } finally {
       setCheckoutLoading(false);
     }
   };
+  
+  
 
   if (loading) return <div>載入中...</div>;
 

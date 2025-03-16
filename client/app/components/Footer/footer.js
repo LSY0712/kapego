@@ -13,17 +13,7 @@ export default function Footer() {
                             </div>
                         </div>
                         {/* 電腦版 網站地圖 關於我們 */}
-                        <div className="d-none d-sm-block col footer-list">
-                            <div>
-                                <a className="text-reset a" href="#">
-                                    活動列表
-                                </a>
-                            </div>
-                            <div>
-                                <a className="text-reset a" href="#">
-                                    課程列表
-                                </a>
-                            </div>
+                        <div className="d-none d-sm-block col footer-list"> 
                             <div>
                                 <a className="text-reset a" href="#">
                                     商品列表
@@ -31,12 +21,7 @@ export default function Footer() {
                             </div>
                             <div>
                                 <a className="text-reset a" href="#">
-                                    租賃列表
-                                </a>
-                            </div>
-                            <div>
-                                <a className="text-reset a" href="#">
-                                    文章列表
+                                    購物車
                                 </a>
                             </div>
                         </div>

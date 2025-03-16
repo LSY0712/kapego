@@ -65,16 +65,18 @@ router.get("/:userId", async (req, res) => {
   const { userId } = req.params;
 
   try {
-    const [cart] = await pool.execute(
+    let [cart] = await pool.execute(
       "SELECT id FROM carts WHERE user_id = ? AND status = 'active'",
       [userId]
     );
 
+    // 沒有 active 購物車 -> 自動建立
     if (!cart.length) {
-      return res.json({
-        success: true,
-        cart: []
-      });
+      const [result] = await pool.execute(
+        "INSERT INTO carts (user_id, status) VALUES (?, 'active')",
+        [userId]
+      );
+      cart = [{ id: result.insertId }];
     }
 
     const cartId = cart[0].id;
@@ -103,6 +105,7 @@ router.get("/:userId", async (req, res) => {
     res.status(500).json({ success: false, message: "獲取購物車失敗", error });
   }
 });
+
 
 // ✅ 更新數量
 router.put("/update", async (req, res) => {
@@ -179,71 +182,71 @@ router.delete("/remove", async (req, res) => {
 
 // ✅ 結帳
 router.post("/checkout", async (req, res) => {
-  const { userId } = req.body;
-  console.log("📢 userId:", userId);
+  const { userId, totalPrice, items } = req.body;
 
-  if (!userId) {
-    return res.status(400).json({ success: false, message: "缺少 userId" });
+  console.log("📢 結帳資料:", { userId, totalPrice, items });
+
+  if (!userId || !totalPrice || !items || !items.length) {
+    return res.status(400).json({ success: false, message: "缺少必要參數" });
   }
 
+  const connection = await pool.getConnection();
   try {
-    // 取得購物車
-    const [cart] = await pool.execute(
-      "SELECT id FROM carts WHERE user_id = ? AND status = 'active'",
+    await connection.beginTransaction();
+
+    // ✅ 建立訂單（已經改成 total_price）
+    const [orderResult] = await connection.execute(
+      "INSERT INTO orders (user_id, status, total_price) VALUES (?, 'paid', ?)",
+      [userId, totalPrice]
+    );
+
+    const orderId = orderResult.insertId;
+    console.log("📝 訂單 ID:", orderId);
+
+    // ✅ 插入訂單明細
+    const orderItemsParams = [];
+    const orderItemsValues = items.map(item => {
+      orderItemsParams.push(orderId, item.product_id, item.quantity, item.price || 0);
+      return "(?, ?, ?, ?)";
+    }).join(", ");
+
+    await connection.execute(
+      `INSERT INTO order_items (order_id, product_id, quantity, price) VALUES ${orderItemsValues}`,
+      orderItemsParams
+    );
+
+    // ✅ 更新購物車狀態為 checked_out
+    await connection.execute(
+      "UPDATE carts SET status = 'checked_out' WHERE user_id = ? AND status = 'active'",
       [userId]
     );
-    console.log("🛒 購物車:", cart);
 
-    if (!cart.length) {
-      return res.status(400).json({ success: false, message: "購物車為空" });
-    }
-
-    const cartId = cart[0].id;
-
-    // 取得購物車商品
-    const [items] = await pool.execute(
-      "SELECT product_id, quantity, price FROM cart_items WHERE cart_id = ?",
-      [cartId]
-    );
-    console.log("🛍️ 購物車商品:", items);
-
-    if (!items.length) {
-      return res.status(400).json({ success: false, message: "購物車沒有商品" });
-    }
-
-    // 計算總金額
-    const totalAmount = items.reduce(
-      (sum, item) => sum + (item.quantity * (item.price || 0)), 
-      0
-    );
-    console.log("💰 總金額:", totalAmount);
-
-    // 建立訂單
-    const [order] = await pool.execute(
-      "INSERT INTO orders (user_id, status, total_amount) VALUES (?, 'paid', ?)",
-      [userId, totalAmount]
+    // ✅ 自動建立新的 active 購物車
+    const [newCartResult] = await connection.execute(
+      "INSERT INTO carts (user_id, status) VALUES (?, 'active')",
+      [userId]
     );
 
-    const orderId = order.insertId;
+    console.log("🆕 已新建 active 購物車 ID:", newCartResult.insertId);
 
-    // 寫入訂單明細
-    const orderItemsValues = items
-      .map(item => `(${orderId}, ${item.product_id}, ${item.quantity}, ${item.price || 0})`)
-      .join(", ");
-    await pool.execute(
-      `INSERT INTO order_items (order_id, product_id, quantity, price) VALUES ${orderItemsValues}`
-    );
+    await connection.commit();
 
-    // 更新購物車狀態
-    await pool.execute("UPDATE carts SET status = 'checked_out' WHERE id = ?", [
-      cartId,
-    ]);
-
-    res.json({ success: true, message: "訂單完成", orderId: order.insertId });
+    res.json({
+      success: true,
+      message: "訂單完成",
+      orderId
+    });
 
   } catch (error) {
-    console.error("🔥 結帳失敗:", error);
-    res.status(500).json({ success: false, message: "結帳錯誤", error: error.message });
+    await connection.rollback();
+    console.error("🔥 Checkout 失敗:", error);
+    res.status(500).json({
+      success: false,
+      message: "結帳失敗",
+      error: error.message
+    });
+  } finally {
+    connection.release();
   }
 });
 

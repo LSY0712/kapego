@@ -43,7 +43,6 @@ export default function ProductCard({ product }) {
         alert("請先登入才能加入購物車");
         return;
       }
-      
       const cartData = {
         productId: product.id, // ← 保證有傳！
         quantity: 1, // ← 預設數量

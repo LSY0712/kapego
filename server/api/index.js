@@ -13,7 +13,7 @@ import favoritesRouter from "../routes/favorites/index.js";
 import cartRouter from "../routes/cart/index.js"; 
 import checkoutRouter from "../routes/checkout/index.js";
 import ecpayRouter from "../routes/ecpay/index.js";
-import orderRouter from "../routes/order/index.js";
+import ordersRouter from "../routes/order/index.js";
 import memberRouter from "../routes/member/index.js";
 
 const app = express();
@@ -54,7 +54,7 @@ apiRouter.use("/favorites", favoritesRouter);
 apiRouter.use("/cart", cartRouter);
 apiRouter.use("/checkout", checkoutRouter);
 apiRouter.use("/ecpay", ecpayRouter);
-apiRouter.use("/order", orderRouter);
+apiRouter.use("/order", ordersRouter);
 apiRouter.use("/member", memberRouter);
 
 // 捕捉 404 錯誤

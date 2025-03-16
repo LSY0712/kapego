@@ -12,103 +12,95 @@ export default function useFavorite(itemId) {
 
   const API_BASE_URL = "http://localhost:3005/api/favorites";
 
-  const isLoggedIn = () => {
-    return Boolean(localStorage.getItem("loginWithToken"));
-  };
-
+  // ✅ 取得 token & 驗證是否登入
   const getAuthHeader = () => {
     const token = localStorage.getItem("loginWithToken");
-    return {
-      Authorization: `Bearer ${token}`,
-    };
+    return token ? { Authorization: `Bearer ${token}` } : null;
   };
 
-  // ✅ 初始化時檢查該商品是否已收藏
+  // ✅ 初始查詢「是否已收藏」
+  const fetchFavoriteStatus = async () => {
+    const headers = getAuthHeader();
+
+    if (!headers) {
+      setIsFavorite(false);
+      return;
+    }
+
+    try {
+      const { data } = await axios.get(`${API_BASE_URL}`, { headers });
+
+      if (data.success) {
+        const favorites = data.data.products || [];
+        const ids = favorites.map((item) => item.product_id);
+
+        setIsFavorite(ids.includes(itemId));
+      } else {
+        console.error("取得收藏列表失敗");
+      }
+    } catch (err) {
+      console.error("查詢收藏狀態失敗", err);
+      setError(err);
+    }
+  };
+
   useEffect(() => {
-    const fetchFavoriteStatus = async () => {
-      if (!isLoggedIn()) {
-        setIsFavorite(false);
-        return;
-      }
-
-      try {
-        const response = await axios.get(`${API_BASE_URL}`, {
-          headers: getAuthHeader(),
-        });
-
-        if (response.data.success) {
-          const favorites = response.data.data.products || [];
-          const ids = favorites.map((item) => item.product_id);
-          setIsFavorite(ids.includes(itemId));
-        }
-      } catch (err) {
-        console.error("獲取收藏狀態失敗:", err);
-        setError(err);
-      }
-    };
-
     if (itemId) {
       fetchFavoriteStatus();
     }
   }, [itemId]);
 
-  // ✅ 切換收藏狀態
+  // ✅ 切換收藏
   const toggleFavorite = async () => {
-    const token = localStorage.getItem("loginWithToken");
+    const headers = getAuthHeader();
 
-    if (!token) {
+    if (!headers) {
       showToast("請先登入才能收藏", "error");
       return false;
     }
 
-    try {
-      setLoading(true);
+    setLoading(true);
 
+    try {
       if (!isFavorite) {
         // ➕ 加入收藏
-        const res = await axios.post(
+        const { data } = await axios.post(
           `${API_BASE_URL}`,
-          {
-            productIds: [itemId],
-          },
-          {
-            headers: getAuthHeader(),
-          }
+          { productIds: [itemId] },
+          { headers }
         );
 
-        if (res.data.success) {
+        if (data.success) {
           showToast("已加入收藏");
           setIsFavorite(true);
           return true;
         } else {
-          showToast(res.data.message || "加入收藏失敗", "error");
+          showToast(data.message || "加入收藏失敗", "error");
           return false;
         }
       } else {
         // ➖ 取消收藏
-        const res = await axios.delete(
+        const { data } = await axios.delete(
           `${API_BASE_URL}`,
           {
-            headers: getAuthHeader(),
-            data: {
-              productIds: [itemId],
-            },
+            headers,
+            data: { productIds: [itemId] },
           }
         );
 
-        if (res.data.success) {
+        if (data.success) {
           showToast("已取消收藏");
           setIsFavorite(false);
           return true;
         } else {
-          showToast(res.data.message || "取消收藏失敗", "error");
+          showToast(data.message || "取消收藏失敗", "error");
           return false;
         }
       }
-    } catch (error) {
-      console.error("收藏請求錯誤:", error);
-      showToast(error.response?.data?.message || "收藏失敗", "error");
-      setError(error);
+    } catch (err) {
+      console.error("切換收藏失敗", err);
+      showToast(err.response?.data?.message || "收藏操作失敗", "error");
+      setError(err);
       return false;
     } finally {
       setLoading(false);

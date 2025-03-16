@@ -51,7 +51,7 @@ export default function Header() {
                   商品列表
                 </Link>
               </li>
-              <li className="px-5 py-2">
+              {/* <li className="px-5 py-2">
                 <Link
                   className="a"
                   href="/article"
@@ -59,7 +59,7 @@ export default function Header() {
                 >
                   關於我們
                 </Link>
-              </li>
+              </li> */}
             </ul>
           </div>
           {/* <HeaderPop show={showPop} activeMenu={activeMenu} /> */}

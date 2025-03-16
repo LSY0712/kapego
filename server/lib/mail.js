@@ -58,8 +58,11 @@ const otpMailText = (otpToken) => `
 `;
 
 // ✅ 發送 OTP 驗證信
-export const sendOtpMail = async (otpToken) => {
-  if (isDev) console.log("[OTP]", otpToken);
+export const sendOtpMail = async (email, otpToken) => {
+  if (isDev) {
+    console.log("✅ 產生 OTP：", otpToken);
+    console.log("[OTP] 要寄送到的 email:", email);
+  }
 
   const transporter = nodemailer.createTransport(transport);
 

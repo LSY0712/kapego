@@ -8,42 +8,36 @@ import { Modal, Button } from "react-bootstrap";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
+// 模擬登入 userId
+// ⚠️ ⚠️ ⚠️ 之後改用 useAuth() 或 context 拿 user 資訊
+const MOCK_USER_ID = 60;
+
 export default function Order() {
   const [orders, setOrders] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
 
   useEffect(() => {
-    const fakeOrders = [
-      {
-        id: "2349029348203",
-        date: "2025-01-19",
-        status: "已完成",
-        total: "1798",
-        items: [
-          {
-            id: 1,
-            name: "BIO METAL PRO 手工潛水面鏡（經典海馬藍王）",
-            spec: "藍色・B款",
-            img: "/img/product/1/main.png",
-            price: 899,
-            originalPrice: 1000,
-            qty: 1,
-          },
-          {
-            id: 2,
-            name: "BIO METAL PRO 手工潛水面鏡（經典海馬藍王）",
-            spec: "藍色・B款",
-            img: "/img/product/1/main.png",
-            price: 899,
-            originalPrice: 1000,
-            qty: 1,
-          },
-        ],
-      },
-    ];
-    setOrders(fakeOrders);
+    fetchOrders(MOCK_USER_ID);
   }, []);
+
+  // ✅ 拉訂單列表
+  const fetchOrders = async (userId) => {
+    try {
+      const res = await fetch(`http://localhost:3005/api/orders/user/${userId}`);
+      const data = await res.json();
+
+      if (data.success) {
+        console.log("✅ 訂單列表", data.data);
+        setOrders(data.data);
+      } else {
+        toast.error("訂單列表查詢失敗");
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("系統錯誤");
+    }
+  };
 
   // ✅ 點「訂單詳情」才去撈單筆資料
   const fetchOrderDetail = async (orderId) => {
@@ -52,10 +46,11 @@ export default function Order() {
       const data = await res.json();
 
       if (data.success) {
+        console.log("✅ 單筆訂單資料", data.data);
         setSelectedOrder(data.data);
         setShowModal(true);
       } else {
-        toast.error("查詢訂單失敗");
+        toast.error("查詢訂單詳情失敗");
       }
     } catch (err) {
       console.error(err);
@@ -63,11 +58,15 @@ export default function Order() {
     }
   };
 
+  // ✅ 再買一次
   const handleRebuy = async (orderId) => {
     try {
       const res = await fetch(`http://localhost:3005/api/orders/${orderId}/rebuy`, {
         method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: MOCK_USER_ID }),
       });
+
       const result = await res.json();
 
       if (result.success) {
@@ -86,6 +85,16 @@ export default function Order() {
     setSelectedOrder(null);
   };
 
+  // ➡️ 日期格式化 (可以依需求再調整)
+  const formatDate = (dateStr) => {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString("zh-TW", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    });
+  };
+
   return (
     <div className="container my-5">
       <ToastContainer position="top-right" autoClose={2000} />
@@ -96,7 +105,6 @@ export default function Order() {
             <div className={styles.asideTitle}>
               <h5 className="fw-bold m-0">會員中心</h5>
             </div>
-
             <div className={styles.asideContent}>
               <Link href="/member/account" className={styles.menuItem}>
                 <i className="bi bi-person-fill me-2"></i>
@@ -136,23 +144,20 @@ export default function Order() {
                     style={{ backgroundColor: "#a8a8a8", color: "#fff" }}
                   >
                     <div className="d-flex align-items-center gap-3 flex-wrap">
-                      <p className="mb-0 fw-bold">{order.date}</p>
-                      <p className="mb-0">訂單編號：{order.id}</p>
+                      <p className="mb-0 fw-bold">{formatDate(order.createdAt)}</p>
+                      <p className="mb-0">訂單編號：{order.orderNumber}</p>
                     </div>
                     <div className="fw-bold">{order.status}</div>
                   </div>
 
-                  {/* 商品清單 */}
+                  {/* 商品預覽 */}
                   <div className="px-4 py-3 d-flex flex-column gap-3">
-                    {order.items.map((item) => (
-                      <div
-                        key={item.id}
-                        className="d-flex justify-content-between align-items-center border-bottom pb-3"
-                      >
+                    {order.previewItem ? (
+                      <div className="d-flex justify-content-between align-items-center border-bottom pb-3">
                         <div className="d-flex align-items-center gap-3">
                           <img
-                            src={item.img}
-                            alt={item.name}
+                            src={order.previewItem.image_url || "/img/default.png"}
+                            alt={order.previewItem.name}
                             style={{
                               width: "100px",
                               height: "100px",
@@ -161,25 +166,22 @@ export default function Order() {
                             className="rounded"
                           />
                           <div>
-                            <p className="mb-1 fw-bold">{item.name}</p>
-                            <p className="mb-1 text-muted">{item.spec}</p>
-                            <p className="mb-1">x{item.qty}</p>
+                            <p className="mb-1 fw-bold">{order.previewItem.name}</p>
+                            <p className="mb-1 text-muted">商品數量: {order.totalItems}</p>
                           </div>
                         </div>
                         <div className="text-end">
-                          <p className="mb-1 text-muted">
-                            NT${item.originalPrice}
-                          </p>
-                          <p className="fw-bold text-danger">NT${item.price}</p>
+                          <p className="fw-bold text-danger">NT${order.total_price}</p>
                         </div>
                       </div>
-                    ))}
+                    ) : (
+                      <p className="text-muted">沒有商品資料</p>
+                    )}
                   </div>
 
-                  {/* 總計＆按鈕 */}
+                  {/* 按鈕 / 金額 */}
                   <div className="px-4 py-3 d-flex justify-content-between align-items-center bg-white">
                     <div className={`d-flex gap-2 ${styles.IBbtn}`}>
-                      {/* 再買一次 */}
                       <div
                         className={styles.hvbtn}
                         role="button"
@@ -187,8 +189,6 @@ export default function Order() {
                       >
                         再買一次
                       </div>
-
-                      {/* 訂單詳情 */}
                       <div
                         className={styles.dfbtn}
                         role="button"
@@ -200,7 +200,7 @@ export default function Order() {
                     <div className="text-end">
                       <p className="mb-0 fw-bold">
                         訂單金額：
-                        <span className="text-danger">NT${order.total}</span>
+                        <span className="text-danger">NT${order.total_price}</span>
                       </p>
                     </div>
                   </div>
@@ -211,38 +211,40 @@ export default function Order() {
         </main>
       </div>
 
-      {/* ===== Modal ===== */}
+      {/* ===== Modal (訂單詳情) ===== */}
       <Modal show={showModal} onHide={handleCloseModal} centered>
         <Modal.Header closeButton>
           <Modal.Title>訂單詳情</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          {selectedOrder && (
+          {selectedOrder ? (
             <>
               <p>訂單編號：{selectedOrder.order.id}</p>
-              <p>日期：{selectedOrder.order.orderDate}</p>
-              <p>狀態：{selectedOrder.order.orderStatusText}</p>
+              <p>日期：{formatDate(selectedOrder.order.createdAt)}</p>
+              <p>狀態：{selectedOrder.order.status}</p>
               <hr />
-              {selectedOrder.items.products.map((item) => (
-                <div
-                  key={item.product_id}
-                  className="d-flex justify-content-between mb-2"
-                >
-                  <div>
-                    <p className="fw-bold mb-0">{item.name}</p>
-                    <p className="text-muted mb-0">{item.color} / {item.size}</p>
+              {selectedOrder.items.length > 0 ? (
+                selectedOrder.items.map((item, index) => (
+                  <div key={index} className="d-flex justify-content-between mb-2">
+                    <div>
+                      <p className="fw-bold mb-0">{item.name}</p>
+                      <p className="text-muted mb-0">數量: x{item.quantity}</p>
+                    </div>
+                    <div className="text-end">
+                      <p className="text-danger mb-0">NT${item.price}</p>
+                    </div>
                   </div>
-                  <div className="text-end">
-                    <p className="mb-0">x{item.quantity}</p>
-                    <p className="text-danger mb-0">NT${item.price}</p>
-                  </div>
-                </div>
-              ))}
+                ))
+              ) : (
+                <p>沒有商品資料</p>
+              )}
               <hr />
               <p className="fw-bold text-end">
-                訂單總金額：NT${selectedOrder.order.totalAmount}
+                訂單總金額：NT${selectedOrder.order.total_price}
               </p>
             </>
+          ) : (
+            <p>載入中...</p>
           )}
         </Modal.Body>
         <Modal.Footer>
