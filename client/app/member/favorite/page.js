@@ -26,7 +26,7 @@ export default function Favorite() {
     }
 
     try {
-      const res = await fetch(`http://localhost:3005/api/favorite`, {
+      const res = await fetch(`http://localhost:3005/api/favorites`, {
         headers: {
           Authorization: `Bearer ${storedToken}`,
         },
@@ -100,7 +100,7 @@ export default function Favorite() {
     if (!userId || !storedToken) return;
 
     try {
-      const res = await fetch(`http://localhost:3005/api/favorite`, {
+      const res = await fetch(`http://localhost:3005/api/favorites`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",

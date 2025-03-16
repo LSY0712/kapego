@@ -16,10 +16,11 @@ router.get("/:id", async (req, res) => {
     `;
 
     const [productRows] = await pool.query(productSql, [id]);
-
-    if (!productRows.length) {
-      return res.status(404).json({ success: false, message: "找不到商品" });
+    
+    if (!Array.isArray(productRows) || productRows.length === 0) {
+      return res.status(404).json({ success: false, message: "Product not found" });
     }
+
 
     const product = productRows[0];
 

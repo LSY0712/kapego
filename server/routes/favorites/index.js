@@ -86,9 +86,10 @@ router.post("/", async (req, res) => {
     const values = newIds.map((id) => `(${userId}, ${id})`).join(", ");
 
     await pool.execute(
-      `INSERT INTO favorites (user_id, product_id) VALUES ${values}`
+      `INSERT INTO favorites (user_id, product_id) VALUES ?`,
+  [values]
     );
-
+    
     res.json({
       success: true,
       message: "商品已成功加入收藏"

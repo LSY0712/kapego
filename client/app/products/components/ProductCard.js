@@ -1,5 +1,5 @@
 import Link from "next/link";
-import Image from "next/image";
+import { useAuth } from "@/hooks/use-auth";
 import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
 import styles from "./products.module.css";
 import useFavorite from "@/hooks/useFavorite";
@@ -26,8 +26,9 @@ export default function ProductCard({ product }) {
     isFavorite,
     toggleFavorite,
     loading: favoriteLoading,
-  } = useFavorite(product.id, "product");
+  } = useFavorite(product.id);
 
+  const { user } = useAuth();
   const { addToCart } = useCart();
   const { showToast } = useToast();
   const [imageLoaded, setImageLoaded] = useState(false);
@@ -37,33 +38,53 @@ export default function ProductCard({ product }) {
     e.stopPropagation();
 
     try {
+      if (!product.variant_id) {
+        alert("請選擇商品規格");
+        return;
+      }
+
+      const userId = user?.id;
+      if (!userId) {
+        alert("請先登入才能加入購物車");
+        return;
+      }
+
       const cartData = {
-        userId: 1,
+        userId: userId,
         type: "product",
         variantId: product.variant_id,
         quantity: 1,
       };
 
-      const success = await addToCart(1, cartData);
+      const success = await addToCart(userId, cartData);
+
       if (success) {
-        showToast ? showToast("商品已加入購物車") : alert("成功加入購物車！");
+        showToast("商品已加入購物車");
+      } else {
+        alert("加入購物車失敗，請稍後再試");
       }
     } catch (error) {
       console.error("加入購物車失敗:", error);
-      alert("加入購物車失敗，請稍後再試");
+      alert(error.response?.data?.message || "加入購物車失敗，請稍後再試");
     }
   };
-  console.log("product.main_image:", product.main_image);
 
-  const renderPriceRange = () => {
-    const minPrice = product.min_price || product.price;
-    const maxPrice = product.max_price;
-
-    if (!maxPrice || minPrice === maxPrice) {
-      return `NT$${minPrice}`;
+  const handleFavoriteClick = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+  
+    if (!user?.id) {
+      alert("請先登入才能收藏商品");
+      return;
     }
-
-    return `NT$${minPrice} ~ NT$${maxPrice}`;
+  
+    if (favoriteLoading) return;
+  
+    const success = await toggleFavorite();
+  
+    if (!success) {
+      alert("收藏操作失敗，請稍後再試");
+    }
   };
 
   return (
@@ -73,9 +94,11 @@ export default function ProductCard({ product }) {
       <Link href={`/products/${product.id}`} className={styles.productLink}>
         <div className={styles.productImg}>
           <img
-            src={`http://localhost:3005${
-              product.images?.[0]?.image_path || "/img/default.png"
-            }`}
+            src={
+              product.id
+                ? `/img/product/${product.id}/main.png`
+                : "/img/default.png"
+            }
             alt={product.name || "商品圖片"}
             style={{
               objectFit: "cover",
@@ -87,15 +110,9 @@ export default function ProductCard({ product }) {
           <div className={styles.productOverlay}>
             <button
               className={styles.iconButton}
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                if (!favoriteLoading) {
-                  toggleFavorite();
-                }
-              }}
-              style={{ border: "none", background: "none" }}
+              onClick={handleFavoriteClick}
               disabled={favoriteLoading}
+              style={{ border: "none", background: "none" }}
             >
               {isFavorite ? (
                 <AiFillHeart color="red" size={36} />
@@ -118,9 +135,8 @@ export default function ProductCard({ product }) {
           </div>
 
           <div>{product.name || "商品名稱"}</div>
-          <div className={styles.salePrice}>{renderPriceRange()}</div>
           <div className={styles.originalPrice}>
-            NT${product.original_price || (product.min_price || 0) * 1.5}
+            NT${product.original_price}
           </div>
         </div>
       </Link>
