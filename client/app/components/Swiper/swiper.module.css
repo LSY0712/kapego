@@ -14,6 +14,52 @@
   }
 .kv {
     height: calc(100vh - 100px);
+    background-image: url("/img/kv-bg.png");
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 35px;
+    .kvText {
+      gap: 10px;
+      color: #fff;
+      margin-bottom: 35px;
+      .h1 {
+        font-size: 64px;
+        text-align: center;
+      }
+      .p {
+        font-size: 14px;
+        text-align: center;
+      }
+    }
+  }
+  .kv1 {
+    height: calc(100vh - 100px);
+    background-image: url("/image/kv-bg.png");
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 35px;
+    .kvText {
+      gap: 10px;
+      color: #fff;
+      margin-bottom: 35px;
+      .h1 {
+        font-size: 64px;
+        text-align: center;
+      }
+      .p {
+        font-size: 14px;
+        text-align: center;
+      }
+    }
+  }
+  .kv2 {
+    height: calc(100vh - 100px);
     background-image: url("/image/kv-bg.png");
     background-size: cover;
     background-position: center;

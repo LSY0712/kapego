@@ -28,83 +28,7 @@ export default function Home() {
 
         {/* section start */}
         <div className={`container ${styles.sectionStart}`}>
-          <div
-            className={`${styles.kvStart} d-flex justify-content-center align-items-center`}
-          >
-            <img
-              className={styles.sectionStartBg}
-              src="/image/kv-start-decoration.png"
-            />
-            <div className={styles.kvStartText}>
-              <h3 className={`text-center ${styles.h3}`}>
-                你的潛水旅程，從這裡開始！
-              </h3>
-              <form action="" method="get" className={styles.chooses}>
-                <select
-                  className={`${styles.select}`}
-                  name=""
-                  id=""
-                  defaultValue="default"
-                >
-                  <option value="default" disabled>
-                    潛水地點
-                  </option>
-                  <option value="">台灣</option>
-                  <option value="">日本</option>
-                  <option value="">菲律賓</option>
-                  <option value="">其他</option>
-                </select>
-                <select
-                  className={styles.select}
-                  name=""
-                  id=""
-                  defaultValue="default"
-                >
-                  <option value="default" disabled>
-                    潛水類型
-                  </option>
-                  <option value="">自由潛水</option>
-                  <option value="">水肺潛水</option>
-                  <option value="">浮潛</option>
-                  <option value="">其他</option>
-                </select>
-                <select
-                  className={`${styles.select} d-sm-none d-block`}
-                  name=""
-                  id=""
-                  defaultValue="default"
-                >
-                  <option value="default" disabled>
-                    潛水月份
-                  </option>
-                  <option value="">一月</option>
-                  <option value="">二月</option>
-                  <option value="">三月</option>
-                  <option value="">四月</option>
-                  <option value="">五月</option>
-                  <option value="">六月</option>
-                  <option value="">七月</option>
-                  <option value="">八月</option>
-                  <option value="">九月</option>
-                  <option value="">十月</option>
-                  <option value="">十一月</option>
-                  <option value="">十二月</option>
-                </select>
-                <button className={`d-none d-sm-block ${styles.scondaryBtn}`}>
-                  開始搜尋
-                </button>
-                <button className={`d-none d-sm-block ${styles.scondaryBtn}`}>
-                  清除條件
-                </button>
-                <div
-                  className={`d-flex d-sm-none justify-content-between w-100 ${styles.btns}`}
-                >
-                  <button className={styles.scondaryBtn}>開始搜尋</button>
-                  <button className={styles.scondaryBtn}>清除條件</button>
-                </div>
-              </form>
-            </div>
-          </div>
+          
         </div>
 
         {/* section activity */}
@@ -264,7 +188,7 @@ export default function Home() {
         <div
           className={`d-sm-flex d-none container ${styles.sectionchooseUs} ${styles.section}`}
         >
-          <h3 className={styles.h3}>專業、品質、透明，安心選擇DiveIn</h3>
+          <h3 className={styles.h3}>Why Kapego?</h3>
           <div className="d-flex">
             <div className={styles.imgContainer}>
               <img src="/image/leftside-img.png" alt="" />
@@ -322,26 +246,7 @@ export default function Home() {
               </div>
               <div>
                 <div className={`d-flex justify-content-between`}>
-                  <div className={`d-flex align-items-center ${styles.card}`}>
-                    <div className={styles.circleIcon}>
-                      <img
-                        className={styles.img}
-                        src="/image/Rectangle 10.png"
-                        alt=""
-                      />
-                    </div>
-                    <div className={styles.cardText}>
-                      <p className={`${styles.p} ${styles.p1}`}>
-                        輕鬆靈活，租借無憂
-                      </p>
-                      <p className={`${styles.p} ${styles.p2}`}>
-                        不想購買？租借無憂，輕鬆享受潛水樂趣
-                      </p>
-                      <Link href="/rent" className={`${styles.p} ${styles.p3}`}>
-                        我們提供設備租借服務，減少旅遊負擔
-                      </Link>
-                    </div>
-                  </div>
+                  
                   <div className={`d-flex align-items-center ${styles.card}`}>
                     <div className={styles.circleIcon}>
                       <img
@@ -369,280 +274,9 @@ export default function Home() {
           </div>
         </div>
 
-        {/* section course */}
-        <div className={`container ${styles.section} ${styles.sectionCourse}`}>
-          <h3 className={styles.h3}>零基礎學習，輕鬆進入深藍</h3>
-          <div className={styles.cardsAndDots}>
-            <div
-              className={`d-flex justify-content-sm-between justify-content-around`}
-            >
-              <div className={`${styles.card}`}>
-                <div className={styles.imgContainer}>
-                  <img
-                    className={styles.img}
-                    src="/image/jpg (10).webp"
-                    alt=""
-                  />
-                </div>
-                <div className={styles.title}>
-                  初階開放水域潛水認證課程(AO)-DIWA
-                </div>
-                <a href="#" className={styles.more}>
-                  更多資訊
-                </a>
-              </div>
-              <div className={`${styles.card}`}>
-                <div className={styles.imgContainer}>
-                  <img
-                    className={styles.img}
-                    src="/image/jpg (10).webp"
-                    alt=""
-                  />
-                </div>
-                <div className={styles.title}>
-                  初階開放水域潛水認證課程(AO)-DIWA
-                </div>
-                <a href="#" className={styles.more}>
-                  更多資訊
-                </a>
-              </div>
-              <div className={`d-none d-sm-flex ${styles.card}`}>
-                <div className={styles.imgContainer}>
-                  <img
-                    className={styles.img}
-                    src="/image/jpg (10).webp"
-                    alt=""
-                  />
-                </div>
-                <div className={styles.title}>
-                  初階開放水域潛水認證課程(AO)-DIWA
-                </div>
-                <a href="#" className={styles.more}>
-                  更多資訊
-                </a>
-              </div>
-              <div className={`d-none d-sm-flex ${styles.card}`}>
-                <div className={styles.imgContainer}>
-                  <img
-                    className={styles.img}
-                    src="/image/jpg (10).webp"
-                    alt=""
-                  />
-                </div>
-                <div className={styles.title}>
-                  初階開放水域潛水認證課程(AO)-DIWA
-                </div>
-                <a href="#" className={styles.more}>
-                  更多資訊
-                </a>
-              </div>
-            </div>
-            <div className={styles.dots}>
-              <button className={`${styles.dot} ${styles.active}`}></button>
-              <button className={`${styles.dot}`}></button>
-            </div>
-          </div>
-        </div>
-
-        {/* section teacher 應該不用了？ */}
-        {/* <div className={`contianer ${styles.section} ${styles.sectionTeacher}`}>
-                    <h3 className={styles.h3}>精選潛水行程，發現你的下一站</h3>
-                    <div className={`${styles.cardsAndDots}`}>
-                        <div className={styles.cards}>
-                            <div className={`${styles.card} ${styles.active}`}>
-                                <div></div>
-                            </div>
-                        </div>
-                    </div>
-                </div> */}
-
-        {/* section product */}
-        <div className={`container ${styles.section} ${styles.sectionProduct}`}>
-          <h3 className={styles.h3}>精選必備潛水好物，為你打造極致潛水體驗</h3>
-          <div className={`${styles.cardsAndBtn}`}>
-            <div className="">
-              <div className={`d-flex justify-content-center ${styles.cards}`}>
-                <div className={`${styles.card}`}>
-                  <div className={styles.imgContainer}>
-                    <div className={styles.circleIcons}>
-                      <button className={styles.circleIcon}>
-                        <FaRegHeart />
-                      </button>
-                      <button className={styles.circleIcon}>
-                        <FiShoppingCart />
-                      </button>
-                    </div>
-                    <div className={styles.stars}>
-                      <FaStar />
-                      <FaStar />
-                      <FaStar />
-                      <FaStar />
-                      <FaRegStar />
-                    </div>
-                    <img
-                      className={styles.img}
-                      src="/image/800x (1).webp"
-                      alt=""
-                    />
-                  </div>
-                  <div className={styles.right}>
-                    <div className={styles.cardText}>
-                      <p className={`m-0 ${styles.brand}`}>AQUA LUNG</p>
-                      <p className={`m-0 ${styles.name}`}>
-                        SPHERA X 低容積面鏡
-                      </p>
-                      <h6 className={`m-0 ${styles.price}`}>NT $2650</h6>
-                      <div className={styles.circles}>
-                        <button className={styles.circleContainer}>
-                          <FaCircle className={styles.circle} />
-                        </button>
-                        <button className={styles.circleContainer}>
-                          <FaCircle className={styles.circle2} />
-                        </button>
-                        <button className={styles.circleContainer}>
-                          <FaCircle className={styles.circle3} />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className={`${styles.card} d-sm-flex d-none`}>
-                  <div className={styles.imgContainer}>
-                    <div className={styles.circleIcons}>
-                      <button className={styles.circleIcon}>
-                        <FaRegHeart />
-                      </button>
-                      <button className={styles.circleIcon}>
-                        <FiShoppingCart />
-                      </button>
-                    </div>
-                    <div className={styles.stars}>
-                      <FaStar />
-                      <FaStar />
-                      <FaStar />
-                      <FaStar />
-                      <FaRegStar />
-                    </div>
-                    <img
-                      className={styles.img}
-                      src="/image/800x (2).webp"
-                      alt=""
-                    />
-                  </div>
-                  <div className={styles.right}>
-                    <div className={styles.cardText}>
-                      <p className={`m-0 ${styles.brand}`}>APOLLO</p>
-                      <p className={`m-0 ${styles.name}`}>
-                        APOLLO - BIO METAL 多彩鋁合金鏡框(平民海龍王)
-                      </p>
-                      <h6 className={`m-0 ${styles.price}`}>NT $7800</h6>
-                      <div className={styles.circles}>
-                        <button className={styles.circleContainer}>
-                          <FaCircle className={styles.circle} />
-                        </button>
-                        <button className={styles.circleContainer}>
-                          <FaCircle className={styles.circle2} />
-                        </button>
-                        <button className={styles.circleContainer}>
-                          <FaCircle className={styles.circle4} />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div
-                className={`d-sm-flex d-none justify-content-center ${styles.cards}`}
-              >
-                <div className={styles.card}>
-                  <div className={styles.imgContainer}>
-                    <div className={styles.circleIcons}>
-                      <button className={styles.circleIcon}>
-                        <FaRegHeart />
-                      </button>
-                      <button className={styles.circleIcon}>
-                        <FiShoppingCart />
-                      </button>
-                    </div>
-                    <div className={styles.stars}>
-                      <FaStar />
-                      <FaStar />
-                      <FaStar />
-                      <FaStar />
-                      <FaRegStar />
-                    </div>
-                    <img className={styles.img} src="/image/800x.webp" alt="" />
-                  </div>
-                  <div className={styles.right}>
-                    <div className={styles.cardText}>
-                      <p className={`m-0 ${styles.brand}`}>AQUA LUNG</p>
-                      <p className={`m-0 ${styles.name}`}>
-                        SPHERA X 低容積面鏡
-                      </p>
-                      <h6 className={`m-0 ${styles.price}`}>NT $2650</h6>
-                      <div className={styles.circles}>
-                        <button className={styles.circleContainer}>
-                          <FaCircle className={styles.circle} />
-                        </button>
-                        <button className={styles.circleContainer}>
-                          <FaCircle className={styles.circle2} />
-                        </button>
-                        <button className={styles.circleContainer}>
-                          <FaCircle className={styles.circle3} />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className={styles.card}>
-                  <div className={styles.imgContainer}>
-                    <div className={styles.circleIcons}>
-                      <button className={styles.circleIcon}>
-                        <FaRegHeart />
-                      </button>
-                      <button className={styles.circleIcon}>
-                        <FiShoppingCart />
-                      </button>
-                    </div>
-                    <div className={styles.stars}>
-                      <FaStar />
-                      <FaStar />
-                      <FaStar />
-                      <FaStar />
-                      <FaRegStar />
-                    </div>
-                    <img className={styles.img} src="/image/800x.webp" alt="" />
-                  </div>
-                  <div className={styles.right}>
-                    <div className={styles.cardText}>
-                      <p className={`m-0 ${styles.brand}`}>AQUA LUNG</p>
-                      <p className={`m-0 ${styles.name}`}>
-                        SPHERA X 低容積面鏡
-                      </p>
-                      <h6 className={`m-0 ${styles.price}`}>NT $2650</h6>
-                      <div className={styles.circles}>
-                        <button className={styles.circleContainer}>
-                          <FaCircle className={styles.circle} />
-                        </button>
-                        <button className={styles.circleContainer}>
-                          <FaCircle className={styles.circle2} />
-                        </button>
-                        <button className={styles.circleContainer}>
-                          <FaCircle className={styles.circle3} />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="d-flex justify-content-center">
-              <button className={styles.scondaryBtn}>查看全部</button>
-            </div>
-          </div>
-        </div>
-
-        {/* section article*/}
+        
+        
+        {/* section article
         <div className={`container ${styles.section} ${styles.sectionArticle}`}>
           <h3 className={styles.h3}>潛水新知報報，深海探險的必讀文章</h3>
           <div className={styles.cardsAndBtns}>
@@ -707,7 +341,7 @@ export default function Home() {
               </button>
             </div>
           </div>
-        </div>
+        </div> */}
       </main>
     </>
   );

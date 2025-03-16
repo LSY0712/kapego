@@ -31,14 +31,17 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "潛水商城",
-  description: "專業的潛水裝備購物平台",
+  title: "Kapego",
+  description: "專業的戶外燈具品牌",
 };
 
 export default function RootLayout({ children }) {
   return (
     <html lang="zh-TW">
       <head>
+        {/* 或 SVG / PNG 格式 */}
+        <link rel="icon" type="image/png" href="/favicon-32x32.png" />
+
         <link
           href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
           rel="stylesheet"

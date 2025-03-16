@@ -34,12 +34,12 @@ const corsOptions = {
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     const uploadPath = path.join(__dirname, "../../public/img/member"); // **這樣會存到伺服器內**
-    
+
     // **確保資料夾存在**
     if (!fs.existsSync(uploadPath)) {
       fs.mkdirSync(uploadPath, { recursive: true });
     }
-    
+
     cb(null, uploadPath);
   },
   filename: (req, file, cb) => {
@@ -48,21 +48,22 @@ const storage = multer.diskStorage({
 });
 
 // **正確初始化 `multer`**
-const upload = multer({ 
-  storage, 
-  limits: { fileSize: 2 * 1024 * 1024 }, 
+const upload = multer({
+  storage,
+  limits: { fileSize: 2 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
     const fileTypes = /jpeg|jpg|png|webp/;
-    const extname = fileTypes.test(path.extname(file.originalname).toLowerCase());
+    const extname = fileTypes.test(
+      path.extname(file.originalname).toLowerCase()
+    );
     const mimetype = fileTypes.test(file.mimetype);
     if (extname && mimetype) {
       return cb(null, true);
     } else {
       return cb(new Error("❌ 只允許上傳 JPEG、JPG、PNG、GIF 格式的圖片"));
     }
-  }
+  },
 });
-
 
 const router = express.Router();
 router.use(cors(corsOptions));
@@ -76,97 +77,101 @@ router.post("/users/otp", async (req, res) => {
   if (!email) {
     return res.status(400).json({
       success: false,
-      message: "請提供 Email！"
+      message: "請提供 Email！",
     });
   }
 
   try {
-    const { token: otpToken } = generateToken();
+    const { token: otpToken } = generateToken(); // 隨機 OTP
+    const expiresAt = new Date(Date.now() + 30 * 60 * 1000); // 30 分鐘後過期
 
     // 查詢 OTP 是否存在
-    const [existing] = await pool.execute(
-      'SELECT * FROM otp WHERE email = ?',
-      [email]
-    );
+    const [existing] = await pool.execute("SELECT * FROM otp WHERE email = ?", [
+      email,
+    ]);
 
     if (existing.length > 0) {
       // 更新 OTP
       await pool.execute(
-        'UPDATE otp SET token = ?, expires_at = NOW() + INTERVAL 30 MINUTE WHERE email = ?',
-        [otpToken, email]
+        "UPDATE otp SET token = ?, expires_at = ? WHERE email = ?",
+        [otpToken, expiresAt, email]
       );
     } else {
       // 新增 OTP
       await pool.execute(
-        'INSERT INTO otp (email, token, expires_at) VALUES (?, ?, NOW() + INTERVAL 30 MINUTE)',
-        [email, otpToken]
+        "INSERT INTO otp (email, token, created_at, expires_at) VALUES (?, ?, NOW(), ?)",
+        [email, otpToken, expiresAt]
       );
     }
 
-    // 發送 email
-    await sendOtpMail('cathytest111@gmail.com', 'dfjlqunxlesrboea');
+    console.log("✅ 產生 OTP：", otpToken);
+
+    // 發送 email（把 email 傳進去！）
+    await sendOtpMail(email, otpToken);
 
     res.json({
       success: true,
-      message: "驗證碼已寄出，請檢查您的信箱！"
+      message: "驗證碼已寄出，請檢查您的信箱！",
     });
   } catch (error) {
     console.error("❌ 發送 OTP 發生錯誤:", error);
     res.status(500).json({
       success: false,
-      message: "伺服器錯誤，無法寄送驗證碼"
+      message: "伺服器錯誤，無法寄送驗證碼",
     });
   }
 });
+
 // 重設密碼
 router.post("/users/reset-password", async (req, res) => {
   const { email, token, password } = req.body;
 
+  console.log("📦 [重設密碼] 收到參數:", { email, token, password });
+
   if (!email || !token || !password) {
+    console.log("⚠️ 條件未通過:", { email, token, password });
     return res.status(400).json({
       success: false,
-      message: "請填寫所有欄位"
+      message: "請填寫所有欄位",
     });
   }
 
   try {
-    // 查找 OTP 驗證
+    console.log("✅ 條件通過，進入驗證流程");
+
+    // 查找 OTP 驗證（確認這裡有沒有問題）
     const [rows] = await pool.execute(
-      'SELECT * FROM otp WHERE email = ? AND token = ? AND expires_at > NOW()',
+      "SELECT * FROM otp WHERE email = ? AND token = ?",
       [email, token]
     );
+
+    console.log("🔎 查詢 OTP 結果:", rows);
 
     if (rows.length === 0) {
       return res.status(400).json({
         success: false,
-        message: "驗證碼錯誤或已過期"
+        message: "驗證碼錯誤或已過期",
       });
     }
-
-    // 更新密碼
+    // ✅ 密碼 hash
     const hashedPassword = await bcrypt.hash(password, 10);
+    await pool.execute("UPDATE users SET password = ? WHERE email = ?", [
+      hashedPassword,
+      email,
+    ]);
 
-    await pool.execute(
-      'UPDATE users SET password = ? WHERE email = ?',
-      [hashedPassword, email]
-    );
-
-    // 刪除 OTP
-    await pool.execute(
-      'DELETE FROM otp WHERE email = ?',
-      [email]
-    );
+    // ✅ 刪除 OTP
+    await pool.execute("DELETE FROM otp WHERE email = ?", [email]);
 
     res.json({
       success: true,
-      message: "密碼已成功重設！"
+      message: "密碼已成功重設！",
     });
-
   } catch (error) {
     console.error("❌ 重設密碼發生錯誤:", error);
     res.status(500).json({
       success: false,
-      message: "伺服器錯誤，無法重設密碼"
+      message: "伺服器錯誤，無法重設密碼",
     });
   }
 });
@@ -348,7 +353,7 @@ router.post("/users/register", async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
     const sql =
       "INSERT INTO `users` (`email`, `password`, `img`, `created_at`) VALUES (?, ?, ?, ?)";
-      const imgPath = "/img/default.png";   
+    const imgPath = "/img/default.png";
     const [result] = await pool.execute(sql, [
       email,
       hashedPassword,
@@ -358,7 +363,12 @@ router.post("/users/register", async (req, res) => {
 
     res
       .status(201)
-      .json({ status: "success", message: "註冊成功", userId: result.insertId, img: imgPath });
+      .json({
+        status: "success",
+        message: "註冊成功",
+        userId: result.insertId,
+        img: imgPath,
+      });
   } catch (error) {
     console.error("註冊錯誤:", error);
     res.status(500).json({ status: "error", message: "註冊失敗" });
@@ -381,21 +391,19 @@ router.post("/users/google-login", async (req, res) => {
     if (existingUser.length > 0) {
       userId = existingUser[0].id;
 
-      // 更新 google_uid（可加 name/img 更新）
+      // 不改 img，只更新 google_uid 跟 name
       const updateSql = `
         UPDATE users 
-        SET google_uid = ?, name = ?, img = ? 
+        SET google_uid = ?
         WHERE id = ?
       `;
       await pool.execute(updateSql, [
         uid,
         displayName || email.split("@")[0],
-        photoURL || "/img/default.png",
-        userId
+        userId,
       ]);
-
     } else {
-      // 新增帳號
+      // 新增帳號才帶 img
       const insertSql = `
         INSERT INTO users (email, google_uid, name, img, created_at)
         VALUES (?, ?, ?, ?, NOW())
@@ -404,7 +412,7 @@ router.post("/users/google-login", async (req, res) => {
         email,
         uid,
         displayName || email.split("@")[0],
-        photoURL || "/img/default.png"
+        photoURL || "/img/default.png",
       ]);
       userId = result.insertId;
     }
@@ -424,7 +432,6 @@ router.post("/users/google-login", async (req, res) => {
       data: { token },
       message: "Google 登入成功",
     });
-
   } catch (error) {
     console.error("Google 登入錯誤:", error);
     res.status(500).json({ status: "error", message: "Google 登入失敗" });
@@ -477,9 +484,6 @@ router.post("/users/upload", upload.single("avatar"), async (req, res) => {
     });
   }
 });
-
-
-
 
 router.delete("/users/:id", async (req, res) => {
   const { id } = req.params;
@@ -549,21 +553,19 @@ router.post("/users/login", upload.none(), async (req, res) => {
 
 router.post("/users/logout", checkToken, (req, res) => {
   try {
-      res.clearCookie("token"); // 清除 token（如果存放於 cookie）
-      res.json({
-          status: "success",
-          message: "登出成功",
-      });
+    res.clearCookie("token"); // 清除 token（如果存放於 cookie）
+    res.json({
+      status: "success",
+      message: "登出成功",
+    });
   } catch (error) {
-      console.error("登出錯誤:", error);
-      res.status(500).json({
-          status: "error",
-          message: "伺服器錯誤，登出失敗",
-      });
+    console.error("登出錯誤:", error);
+    res.status(500).json({
+      status: "error",
+      message: "伺服器錯誤，登出失敗",
+    });
   }
 });
-
-
 
 router.post("/users/status", checkToken, (req, res) => {
   const { decoded } = req;

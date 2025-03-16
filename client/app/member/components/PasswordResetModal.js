@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 
@@ -10,57 +10,98 @@ export default function PasswordResetModal({ show, onClose, userEmail = '' }) {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
+  // 每次開啟 Modal，初始化 email 和 step
+  useEffect(() => {
+    if (show) {
+      setStep(1);
+      setEmail(userEmail);
+      setVerificationCode('');
+      setNewPassword('');
+      setConfirmPassword('');
+      setIsLoading(false);
+    }
+  }, [show, userEmail]);
+
+  // 發送驗證碼
   const handleSendCode = async () => {
     if (!email) {
-      toast.error('請輸入 Email！');
+      toast.error('請輸入電子郵件');
       return;
     }
 
     try {
       setIsLoading(true);
-      // TODO: 發送驗證碼 API
-      await new Promise(resolve => setTimeout(resolve, 1000)); // 模擬
 
-      toast.success('驗證碼已寄出！');
-      setStep(2);
+      const res = await fetch("http://localhost:3005/api/member/users/otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+
+      const result = await res.json();
+
+      if (result.success) {
+        toast.success("✅ 驗證碼已寄出！");
+        setStep(2); // ➡️ 切換到輸入驗證碼 + 新密碼步驟
+      } else {
+        toast.error(result.message || "❌ 驗證碼寄送失敗");
+      }
     } catch (err) {
-      toast.error('發送驗證碼失敗');
+      toast.error("❌ 系統錯誤，無法寄送驗證碼");
+      console.error(err);
     } finally {
       setIsLoading(false);
     }
   };
 
+  // 提交新密碼
   const handleSubmitPassword = async () => {
     if (!verificationCode || !newPassword || !confirmPassword) {
-      toast.error('請填寫所有欄位！');
+      toast.error('❌ 請填寫所有欄位！');
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      toast.error('兩次密碼不一致！');
+      toast.error('❌ 兩次輸入的密碼不一致！');
       return;
     }
 
     try {
       setIsLoading(true);
-      // TODO: 修改密碼 API
-      await new Promise(resolve => setTimeout(resolve, 1000)); // 模擬
 
-      toast.success('密碼已成功修改！');
-      handleClose();
+      const res = await fetch("http://localhost:3005/api/member/users/reset-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email,
+          token: verificationCode,
+          password: newPassword
+        }),
+      });
+
+      const result = await res.json();
+
+      if (result.success) {
+        toast.success("✅ 密碼已成功修改！");
+        handleClose(); // 關閉 Modal
+      } else {
+        toast.error(result.message || "❌ 密碼重設失敗");
+      }
     } catch (err) {
-      toast.error('密碼修改失敗');
+      toast.error("❌ 系統錯誤，無法重設密碼");
+      console.error(err);
     } finally {
       setIsLoading(false);
     }
   };
 
+  // 關閉 Modal 並重置狀態
   const handleClose = () => {
     setStep(1);
-    setEmail(userEmail);
     setVerificationCode('');
     setNewPassword('');
     setConfirmPassword('');
+    setIsLoading(false);
     onClose();
   };
 
@@ -69,6 +110,7 @@ export default function PasswordResetModal({ show, onClose, userEmail = '' }) {
       <Modal.Header closeButton>
         <Modal.Title>{step === 1 ? '發送驗證碼' : '修改密碼'}</Modal.Title>
       </Modal.Header>
+
       <Modal.Body>
         {step === 1 && (
           <Form>
@@ -76,15 +118,17 @@ export default function PasswordResetModal({ show, onClose, userEmail = '' }) {
               <Form.Label>電子郵件</Form.Label>
               <Form.Control
                 type="email"
-                placeholder="請輸入您的 Email"
                 value={email}
+                readOnly // 如果固定測試帳號可以這樣，不然就刪掉
+                placeholder="請輸入您的 Email"
                 onChange={(e) => setEmail(e.target.value)}
               />
             </Form.Group>
+
             <Button
               variant="primary"
               onClick={handleSendCode}
-              disabled={isLoading}
+              disabled={isLoading || !email}
               className="w-100"
             >
               {isLoading ? '發送中...' : '發送驗證碼'}
@@ -103,6 +147,7 @@ export default function PasswordResetModal({ show, onClose, userEmail = '' }) {
                 onChange={(e) => setVerificationCode(e.target.value)}
               />
             </Form.Group>
+
             <Form.Group className="mb-3">
               <Form.Label>新密碼</Form.Label>
               <Form.Control
@@ -112,6 +157,7 @@ export default function PasswordResetModal({ show, onClose, userEmail = '' }) {
                 onChange={(e) => setNewPassword(e.target.value)}
               />
             </Form.Group>
+
             <Form.Group className="mb-3">
               <Form.Label>確認新密碼</Form.Label>
               <Form.Control
@@ -121,6 +167,7 @@ export default function PasswordResetModal({ show, onClose, userEmail = '' }) {
                 onChange={(e) => setConfirmPassword(e.target.value)}
               />
             </Form.Group>
+
             <Button
               variant="primary"
               onClick={handleSubmitPassword}

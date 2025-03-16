@@ -48,16 +48,26 @@ header {
 
 .header-right-box {
   flex: 1;
+  display: flex;          /* 新增 */
+  align-items: center;    /* 新增，讓上下居中 */
+  justify-content: flex-end; /* 新增，讓 icon 靠右 */
+  gap: 12px;              /* 兩個 icon 之間的間距 */
+
   .a {
     color: #ffffff;
+    display: flex;         /* 新增，讓 icon 元素對齊 */
+    align-items: center;   /* 新增 */
+    justify-content: center; /* 新增 */
+    width: 40px;          /* 建議加寬高統一 */
+    height: 40px;
     &:hover {
       color: var(--primary-color);
     }
   }
-  .form-control::placeholder {
-    font-weight: bold;
-    color: #898989;
-    font-size: 15px;
+
+  svg {
+    width: 24px; /* icon 的大小一致 */
+    height: 24px;
   }
 }
 
