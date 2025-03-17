@@ -1,5 +1,6 @@
 "use client";
 import { useCart } from "@/hooks/cartContext";
+import { useRouter } from 'next/navigation';
 import { useAuth } from "@/hooks/use-auth";   // 引入 useAuth！
 import { useEffect, useState } from "react";
 import Link from "next/link";
@@ -8,6 +9,7 @@ import { FiTrash2 } from "react-icons/fi";
 import axios from "axios";
 
 export default function Cart() {
+  const router = useRouter();
   const { cartData, fetchCart, updateQuantity, removeFromCart, loading } = useCart();
   const { user } = useAuth();  // 這裡拿 user 出來
   const [checkoutLoading, setCheckoutLoading] = useState(false);
@@ -62,7 +64,7 @@ export default function Cart() {
         fetchCart();
   
         // ✅ 或跳轉到訂單頁
-        router.push("/memeber/order");
+        router.push("/member/order");
       } else {
         alert("結帳失敗: " + response.data.message);
       }

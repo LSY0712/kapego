@@ -182,12 +182,12 @@ export default function Register() {
                 <h6>Continue with Google</h6>
               </div>
             </div>
-            <div className={styles.loginLine}>
+            {/* <div className={styles.loginLine}>
               <div className={styles.lineBox}>
                 <img src="/img/line.png" alt="Line logo" />
                 <h6>Continue with Line</h6>
               </div>
-            </div>
+            </div> */}
             <div className={styles.fcBox}>
               <Link href="/member/login" className={styles.ftext}>
                 我有帳號！

@@ -25,8 +25,7 @@ router.get("/:orderId/simple", async (req, res) => {
     const [orderItems] = await pool.execute(
       `SELECT oi.quantity, oi.price, p.name, pi.image_url
        FROM order_items oi
-       JOIN product_variant pv ON oi.variant_id = pv.id
-       JOIN product p ON pv.product_id = p.id
+       JOIN product p ON oi.product_id = p.id
        LEFT JOIN product_images pi ON p.id = pi.product_id AND pi.is_main = 1
        WHERE oi.order_id = ?`,
       [orderId]
@@ -55,9 +54,10 @@ router.get("/:orderId/simple", async (req, res) => {
 router.get("/user/:userId", async (req, res) => {
   const { userId } = req.params;
 
+  console.log("👉 收到請求 userId:", req.params.userId);
   try {
     const [orderRows] = await pool.execute(
-      `SELECT id, total_price, status, createdAt
+      `SELECT id, total_price, total_items, status, createdAt
        FROM orders 
        WHERE user_id = ?
        ORDER BY createdAt DESC`,
@@ -67,15 +67,15 @@ router.get("/user/:userId", async (req, res) => {
     const ordersWithPreview = await Promise.all(
       orderRows.map(async (order) => {
         const [firstItem] = await pool.execute(
-          `SELECT p.name, pi.image_url
+          `SELECT p.name, pi.image_path AS image_url
            FROM order_items oi
-           JOIN product_variant pv ON oi.variant_id = pv.id
-           JOIN product p ON pv.product_id = p.id
-           LEFT JOIN product_images pi ON p.id = pi.product_id AND pi.is_main = 1
+           JOIN product p ON oi.product_id = p.id
+           LEFT JOIN product_images pi ON p.id = pi.product_id 
            WHERE oi.order_id = ?
            LIMIT 1`,
           [order.id]
         );
+        // console.log(firstItem);
 
         return {
           ...order,
@@ -84,6 +84,7 @@ router.get("/user/:userId", async (req, res) => {
         };
       })
     );
+    console.log(orderRows[0].id);
 
     res.json({
       success: true,

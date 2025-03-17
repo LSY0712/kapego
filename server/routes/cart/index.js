@@ -190,20 +190,23 @@ router.post("/checkout", async (req, res) => {
     return res.status(400).json({ success: false, message: "缺少必要參數" });
   }
 
+  // ✅ 計算 total_items (總商品數量)
+  const totalItems = items.reduce((acc, item) => acc + item.quantity, 0);
+
   const connection = await pool.getConnection();
   try {
     await connection.beginTransaction();
 
-    // ✅ 建立訂單（已經改成 total_price）
+    // ✅ 建立訂單，新增 total_items 欄位
     const [orderResult] = await connection.execute(
-      "INSERT INTO orders (user_id, status, total_price) VALUES (?, 'paid', ?)",
-      [userId, totalPrice]
+      "INSERT INTO orders (user_id, status, total_price, total_items) VALUES (?, 'paid', ?, ?)",
+      [userId, totalPrice, totalItems]
     );
 
     const orderId = orderResult.insertId;
     console.log("📝 訂單 ID:", orderId);
 
-    // ✅ 插入訂單明細
+    // ✅ 插入訂單明細（order_items）
     const orderItemsParams = [];
     const orderItemsValues = items.map(item => {
       orderItemsParams.push(orderId, item.product_id, item.quantity, item.price || 0);
@@ -215,7 +218,7 @@ router.post("/checkout", async (req, res) => {
       orderItemsParams
     );
 
-    // ✅ 更新購物車狀態為 checked_out
+    // ✅ 更新購物車狀態
     await connection.execute(
       "UPDATE carts SET status = 'checked_out' WHERE user_id = ? AND status = 'active'",
       [userId]

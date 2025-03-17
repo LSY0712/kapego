@@ -15,24 +15,24 @@ export default function Home() {
   const [articles, setArticles] = useState([]);
   const products = [
     {
-      id: 50,
-      title: "內嵌型壁燈",
+      id: 58,
+      name: "6jd",
       price: 800,
       rating: 4,
-      image: "/img/product/50/main.png",
+      image: "/img/product/58/main.png",
     },
     {
-      id: 52,
-      title: "壁燈",
+      id: 8,
+      name: "1xh",
       price: 700,
       rating: 4,
-      image: "/img/product/52/main.png",
+      image: "/img/product/8/main.png",
     },
     {
       id: 60,
-      title: "壁燈",
+      name: "7ah",
       price: 800,
-      rating: 5,
+      rating: 7,
       image: "/img/product/60/main.png",
     },
 
@@ -109,35 +109,7 @@ export default function Home() {
         <h3 className={`${styles.h3} mt-5`}>熱門商品推薦</h3>
         <div className={`d-flex justify-content-around ${styles.cards}`}>
           {products.map((product) => (
-            <div key={product.id} className={styles.card}>
-              <div className={styles.imgContainer}>
-                <div className={styles.circleIcons}>
-                  <button className={styles.circleIcon}>
-                    <FaRegHeart />
-                  </button>
-                  <button className={styles.circleIcon}>
-                    <FiShoppingCart />
-                  </button>
-                </div>
-                <div className={styles.stars}>
-                  {[...Array(product.rating)].map((_, idx) => (
-                    <FaStar key={idx} />
-                  ))}
-                  {[...Array(5 - product.rating)].map((_, idx) => (
-                    <FaRegStar key={idx} />
-                  ))}
-                </div>
-                <img
-                  className={styles.img}
-                  src={product.image}
-                  alt={product.title}
-                />
-              </div>
-              <div className={`text-center ${styles.title}`}>
-                <p>{product.title}</p>
-                <h6>NT ${product.price}</h6>
-              </div>
-            </div>
+            <ProductCard key={product.id} product={product} />
           ))}
         </div>
       </section>
@@ -176,7 +148,7 @@ export default function Home() {
               />
               <div className={styles.cardText}>
                 <h5>{article.title}</h5>
-                <p>{article.summary}</p>
+                <h6>{article.summary}</h6>
                 <small>{article.date}</small>
               </div>
             </Link>

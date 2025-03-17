@@ -94,7 +94,7 @@ export default function ProductCard({ product }) {
             alt={product.name || "商品圖片"}
             style={{
               objectFit: "cover",
-              width: "100%",
+              width: "70%",
               height: "auto",
             }}
           />
@@ -112,12 +112,12 @@ export default function ProductCard({ product }) {
                 <AiOutlineHeart color="white" size={36} />
               )}
             </button>
-            <button
-              className="btn btn-primary w-75 mt-2"
+            <div
+              className={`w-75 mt-2 ${styles.pdbtn}`}              
               onClick={handleCartClick}
             >
               加入購物車
-            </button>
+            </div>
           </div>
         </div>
 

@@ -68,7 +68,7 @@ export const sendOtpMail = async (email, otpToken) => {
 
   const mailOptions = {
     from: user,                  // 發件人信箱
-    to: user,                    // 🔥🔥🔥 寫死寄給自己（目前測試）
+    to: email,                   
     subject: "您的一次性驗證碼",
     text: otpMailText(otpToken), // 純文字
     html: otpMailHtml(otpToken), // HTML 內容

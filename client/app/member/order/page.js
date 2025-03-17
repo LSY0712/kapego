@@ -1,5 +1,5 @@
 "use client";
-
+import { useAuth } from "@/hooks/use-auth";
 import styles from "../account/account.module.css";
 import Link from "next/link";
 import { useState, useEffect } from "react";
@@ -8,25 +8,27 @@ import { Modal, Button } from "react-bootstrap";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-// 模擬登入 userId
-// ⚠️ ⚠️ ⚠️ 之後改用 useAuth() 或 context 拿 user 資訊
-const MOCK_USER_ID = 60;
 
 export default function Order() {
+  const { user } = useAuth(); // ✅ 正常登入使用者資料
+  const userId = user?.id;    // ⚠️ 一定要檢查 user 是否存在！
+
+  
   const [orders, setOrders] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
 
   useEffect(() => {
-    fetchOrders(MOCK_USER_ID);
-  }, []);
+    if (!userId) return;  // 沒登入就不 fetch
+    fetchOrders(userId);
+  }, [userId]);
 
   // ✅ 拉訂單列表
   const fetchOrders = async (userId) => {
     try {
       const res = await fetch(`http://localhost:3005/api/orders/user/${userId}`);
       const data = await res.json();
-
+console.log(data);
       if (data.success) {
         console.log("✅ 訂單列表", data.data);
         setOrders(data.data);
