@@ -3,52 +3,7 @@ import { pool } from "../../config/db.js";
 
 const router = express.Router();
 
-/**
- * ✅ 單筆訂單詳情 (簡易版)
- * GET /api/orders/:orderId/simple
- */
-router.get("/:orderId/simple", async (req, res) => {
-  const { orderId } = req.params;
-
-  try {
-    const [orderRows] = await pool.execute(
-      `SELECT id, user_id, total_price, status, createdAt 
-       FROM orders 
-       WHERE id = ?`,
-      [orderId]
-    );
-
-    if (orderRows.length === 0) {
-      return res.status(404).json({ success: false, message: "找不到訂單" });
-    }
-
-    const [orderItems] = await pool.execute(
-      `SELECT oi.quantity, oi.price, p.name, pi.image_url
-       FROM order_items oi
-       JOIN product p ON oi.product_id = p.id
-       LEFT JOIN product_images pi ON p.id = pi.product_id AND pi.is_main = 1
-       WHERE oi.order_id = ?`,
-      [orderId]
-    );
-
-    res.json({
-      success: true,
-      data: {
-        order: orderRows[0],
-        items: orderItems,
-      },
-    });
-  } catch (error) {
-    console.error("查詢簡單訂單失敗", error);
-    res.status(500).json({
-      success: false,
-      message: "查詢訂單失敗",
-    });
-  }
-});
-
-/**
- * ✅ 查詢會員所有訂單 (簡易版)
+/* ✅ 查詢會員所有訂單
  * GET /api/orders/user/:userId
  */
 router.get("/user/:userId", async (req, res) => {
@@ -64,31 +19,32 @@ router.get("/user/:userId", async (req, res) => {
       [userId]
     );
 
-    const ordersWithPreview = await Promise.all(
+    const ordersAll = await Promise.all(
       orderRows.map(async (order) => {
-        const [firstItem] = await pool.execute(
-          `SELECT p.name, pi.image_path AS image_url
+        const [items] = await pool.execute(
+          `SELECT p.name, pi.image_path AS image_url, oi.quantity, oi.price
            FROM order_items oi
            JOIN product p ON oi.product_id = p.id
-           LEFT JOIN product_images pi ON p.id = pi.product_id 
-           WHERE oi.order_id = ?
-           LIMIT 1`,
+           LEFT JOIN (
+         SELECT DISTINCT product_id, image_path
+         FROM product_images
+         GROUP BY product_id
+       ) pi ON p.id = pi.product_id
+           WHERE oi.order_id = ?`,
           [order.id]
         );
-        // console.log(firstItem);
 
         return {
           ...order,
           orderNumber: `OD${String(order.id).padStart(8, "0")}`,
-          previewItem: firstItem[0] || null,
+          items: items || [],
         };
       })
     );
-    console.log(orderRows[0].id);
 
     res.json({
       success: true,
-      data: ordersWithPreview,
+      data: ordersAll,
     });
   } catch (error) {
     console.error("獲取用戶訂單失敗:", error);
@@ -104,17 +60,17 @@ router.get("/user/:userId", async (req, res) => {
  * ✅ 再買一次
  * POST /api/orders/:orderId/rebuy
  */
+
 router.post("/:orderId/rebuy", async (req, res) => {
   const { orderId } = req.params;
   const { userId } = req.body;
 
-  if (!userId) {
+  if (!userId || typeof userId !== "number") {
     return res.status(400).json({
       success: false,
       message: "缺少 userId",
     });
   }
-
   const connection = await pool.getConnection();
 
   try {
@@ -122,9 +78,9 @@ router.post("/:orderId/rebuy", async (req, res) => {
 
     // 取得該訂單商品
     const [orderItems] = await connection.execute(
-      `SELECT pv.id as variant_id, oi.quantity
+      `SELECT oi.product_id, p.name, oi.quantity, oi.price
        FROM order_items oi
-       JOIN product_variant pv ON oi.variant_id = pv.id
+       JOIN product p ON oi.product_id = p.id
        WHERE oi.order_id = ?`,
       [orderId]
     );
@@ -156,11 +112,14 @@ router.post("/:orderId/rebuy", async (req, res) => {
 
     // 將商品加入購物車（判斷是否已存在）
     for (const item of orderItems) {
+  //     console.log("cartId:", cartId);
+  // console.log("item.product_id:", item.product_id);
+  // console.log("item.quantity:", item.quantity);
       const [existingItems] = await connection.execute(
-        `SELECT id, quantity FROM cart_items WHERE cart_id = ? AND variant_id = ?`,
-        [cartId, item.variant_id]
+        `SELECT id, quantity FROM cart_items WHERE cart_id = ? AND product_id = ?`,
+        [cartId, item.product_id]
       );
-
+      
       if (existingItems.length > 0) {
         const newQuantity = existingItems[0].quantity + item.quantity;
 
@@ -170,8 +129,8 @@ router.post("/:orderId/rebuy", async (req, res) => {
         );
       } else {
         await connection.execute(
-          `INSERT INTO cart_items (cart_id, variant_id, quantity) VALUES (?, ?, ?)`,
-          [cartId, item.variant_id, item.quantity]
+          `INSERT INTO cart_items (cart_id, product_id, quantity) VALUES (?, ?, ?)`,
+          [cartId, item.product_id, item.quantity]
         );
       }
     }

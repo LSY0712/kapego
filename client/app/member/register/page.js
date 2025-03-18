@@ -81,7 +81,7 @@ export default function Register() {
 
     if (data.status === "success") {
       // 登入成功後跳轉到會員頁面
-      router.push("/");
+      router.push("/member/login");
     } else {
       alert("Google 登入失敗，請稍後再試");
     }

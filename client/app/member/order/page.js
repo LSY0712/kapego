@@ -8,27 +8,27 @@ import { Modal, Button } from "react-bootstrap";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-
 export default function Order() {
-  const { user } = useAuth(); // ✅ 正常登入使用者資料
-  const userId = user?.id;    // ⚠️ 一定要檢查 user 是否存在！
+  const { user } = useAuth();
+  const userId = user?.id;
 
-  
   const [orders, setOrders] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
 
   useEffect(() => {
-    if (!userId) return;  // 沒登入就不 fetch
+    if (!userId) return; // 沒登入就不 fetch
     fetchOrders(userId);
   }, [userId]);
 
   // ✅ 拉訂單列表
   const fetchOrders = async (userId) => {
     try {
-      const res = await fetch(`http://localhost:3005/api/orders/user/${userId}`);
+      const res = await fetch(
+        `http://localhost:3005/api/orders/user/${userId}`
+      );
       const data = await res.json();
-console.log(data);
+      console.log(data);
       if (data.success) {
         console.log("✅ 訂單列表", data.data);
         setOrders(data.data);
@@ -41,33 +41,17 @@ console.log(data);
     }
   };
 
-  // ✅ 點「訂單詳情」才去撈單筆資料
-  const fetchOrderDetail = async (orderId) => {
-    try {
-      const res = await fetch(`http://localhost:3005/api/orders/${orderId}/simple`);
-      const data = await res.json();
-
-      if (data.success) {
-        console.log("✅ 單筆訂單資料", data.data);
-        setSelectedOrder(data.data);
-        setShowModal(true);
-      } else {
-        toast.error("查詢訂單詳情失敗");
-      }
-    } catch (err) {
-      console.error(err);
-      toast.error("系統錯誤");
-    }
-  };
-
   // ✅ 再買一次
   const handleRebuy = async (orderId) => {
     try {
-      const res = await fetch(`http://localhost:3005/api/orders/${orderId}/rebuy`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId: MOCK_USER_ID }),
-      });
+      const res = await fetch(
+        `http://localhost:3005/api/orders/${orderId}/rebuy`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ userId }),
+        }
+      );
 
       const result = await res.json();
 
@@ -87,7 +71,6 @@ console.log(data);
     setSelectedOrder(null);
   };
 
-  // ➡️ 日期格式化 (可以依需求再調整)
   const formatDate = (dateStr) => {
     const date = new Date(dateStr);
     return date.toLocaleDateString("zh-TW", {
@@ -146,7 +129,9 @@ console.log(data);
                     style={{ backgroundColor: "#a8a8a8", color: "#fff" }}
                   >
                     <div className="d-flex align-items-center gap-3 flex-wrap">
-                      <p className="mb-0 fw-bold">{formatDate(order.createdAt)}</p>
+                      <p className="mb-0 fw-bold">
+                        {formatDate(order.createdAt)}
+                      </p>
                       <p className="mb-0">訂單編號：{order.orderNumber}</p>
                     </div>
                     <div className="fw-bold">{order.status}</div>
@@ -154,28 +139,43 @@ console.log(data);
 
                   {/* 商品預覽 */}
                   <div className="px-4 py-3 d-flex flex-column gap-3">
-                    {order.previewItem ? (
-                      <div className="d-flex justify-content-between align-items-center border-bottom pb-3">
-                        <div className="d-flex align-items-center gap-3">
-                          <img
-                            src={order.previewItem.image_url || "/img/default.png"}
-                            alt={order.previewItem.name}
-                            style={{
-                              width: "100px",
-                              height: "100px",
-                              objectFit: "cover",
-                            }}
-                            className="rounded"
-                          />
-                          <div>
-                            <p className="mb-1 fw-bold">{order.previewItem.name}</p>
-                            <p className="mb-1 text-muted">商品數量: {order.totalItems}</p>
+                    {order.items && order.items.length > 0 ? (
+                      order.items.map((item, index) => (
+                        <div
+                          key={index}
+                          className="d-flex justify-content-between align-items-center border-bottom pb-3"
+                        >
+                          <div className="d-flex align-items-center gap-3">
+                            <img
+                              src={item.image_url || "/img/default.png"}
+                              alt={item.name}
+                              style={{
+                                width: "100px",
+                                height: "100px",
+                                objectFit: "cover",
+                              }}
+                              className="rounded"
+                            />
+                            <div>
+                              <p className="mb-1 fw-bold">{item.name}</p>
+                              <p className="mb-1 text-muted">
+                                數量: {item.quantity}
+                              </p>
+                              <p className="mb-1 text-muted">
+                                單價: NT${item.price}
+                              </p>
+                            </div>
+                          </div>
+                          <div
+                            className="text-end"
+                            style={{ minWidth: "100px" }}
+                          >
+                            <p className="fw-bold text-danger mb-0">
+                              小計: NT${item.price * item.quantity}
+                            </p>
                           </div>
                         </div>
-                        <div className="text-end">
-                          <p className="fw-bold text-danger">NT${order.total_price}</p>
-                        </div>
-                      </div>
+                      ))
                     ) : (
                       <p className="text-muted">沒有商品資料</p>
                     )}
@@ -191,18 +191,13 @@ console.log(data);
                       >
                         再買一次
                       </div>
-                      <div
-                        className={styles.dfbtn}
-                        role="button"
-                        onClick={() => fetchOrderDetail(order.id)}
-                      >
-                        訂單詳情
-                      </div>
                     </div>
                     <div className="text-end">
                       <p className="mb-0 fw-bold">
                         訂單金額：
-                        <span className="text-danger">NT${order.total_price}</span>
+                        <span className="text-danger">
+                          NT${order.total_price}
+                        </span>
                       </p>
                     </div>
                   </div>
@@ -212,49 +207,6 @@ console.log(data);
           </div>
         </main>
       </div>
-
-      {/* ===== Modal (訂單詳情) ===== */}
-      <Modal show={showModal} onHide={handleCloseModal} centered>
-        <Modal.Header closeButton>
-          <Modal.Title>訂單詳情</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          {selectedOrder ? (
-            <>
-              <p>訂單編號：{selectedOrder.order.id}</p>
-              <p>日期：{formatDate(selectedOrder.order.createdAt)}</p>
-              <p>狀態：{selectedOrder.order.status}</p>
-              <hr />
-              {selectedOrder.items.length > 0 ? (
-                selectedOrder.items.map((item, index) => (
-                  <div key={index} className="d-flex justify-content-between mb-2">
-                    <div>
-                      <p className="fw-bold mb-0">{item.name}</p>
-                      <p className="text-muted mb-0">數量: x{item.quantity}</p>
-                    </div>
-                    <div className="text-end">
-                      <p className="text-danger mb-0">NT${item.price}</p>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <p>沒有商品資料</p>
-              )}
-              <hr />
-              <p className="fw-bold text-end">
-                訂單總金額：NT${selectedOrder.order.total_price}
-              </p>
-            </>
-          ) : (
-            <p>載入中...</p>
-          )}
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleCloseModal}>
-            關閉
-          </Button>
-        </Modal.Footer>
-      </Modal>
     </div>
   );
 }
