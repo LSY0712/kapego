@@ -18,7 +18,7 @@ export default function Cart() {
     fetchCart();
   }, []);
 
-  const products = cartData || [];
+  const products = cartData || []; 
 
   console.log("🛒 products in component:", products);
 
