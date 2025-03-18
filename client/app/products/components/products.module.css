@@ -195,7 +195,7 @@
 .productImg img {
   position: absolute;
 
-  top: 0;
+  top: 10;
   left: 50;
   width: 80%;
   height: auto;

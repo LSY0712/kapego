@@ -1,7 +1,7 @@
 "use client";
 import { useCart } from "@/hooks/cartContext";
 import { useRouter } from 'next/navigation';
-import { useAuth } from "@/hooks/use-auth";   // 引入 useAuth！
+import { useAuth } from "@/hooks/use-auth";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import styles from "./cart.module.css";
@@ -11,14 +11,14 @@ import axios from "axios";
 export default function Cart() {
   const router = useRouter();
   const { cartData, fetchCart, updateQuantity, removeFromCart, loading } = useCart();
-  const { user } = useAuth();  // 這裡拿 user 出來
+  const { user } = useAuth(); 
   const [checkoutLoading, setCheckoutLoading] = useState(false);
 
   useEffect(() => {
     fetchCart();
   }, []);
 
-  const products = cartData || [];
+  const products = cartData || []; 
 
   console.log("🛒 products in component:", products);
 
